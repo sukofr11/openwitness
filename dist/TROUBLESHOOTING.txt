@@ -1,0 +1,23 @@
+# Solución de Problemas Comunes
+
+## Error: "auth/unauthorized-domain"
+Este error ocurre porque Firebase bloquea por defecto cualquier dominio que no hayas autorizado explícitamente para evitar abusos.
+
+### Cómo solucionarlo:
+1. Ve a [Firebase Console](https://console.firebase.google.com/).
+2. Entra en tu proyecto.
+3. En el menú izquierdo, ve a **Authentication**.
+4. Busca la pestaña **Settings** (Configuración) o "Sign-in method".
+5. Baja hasta encontrar **Authorized domains** (Dominios autorizados).
+6. Haz clic en **Add domain** (Añadir dominio).
+7. Escribe el dominio donde estás viendo la web:
+   - Si estás en local: escribe `localhost` y también `127.0.0.1`.
+   - Si ya la publicaste: escribe tu dominio (ej: `mi-app.netlify.app`).
+
+Recarga la página y vuelve a intentar el Login.
+
+## Error: "Firebase: Error (auth/invalid-api-key)"
+Significa que copiaste mal la API Key en `firebase-config.js`. Verifica que no haya espacios extra.
+
+## Las imágenes no se suben
+Asegúrate de haber habilitado **Storage** en la consola de Firebase y que las reglas de seguridad permitan escritura (test mode).

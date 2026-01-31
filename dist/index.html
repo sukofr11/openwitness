@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Red de Testigos Confiables - Plataforma para validar y publicar testimonios geolocalizados durante crisis humanitarias">
+    <title>Red de Testigos Confiables | Testimonios Verificados en Crisis Humanitarias</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Firebase SDK (Compat version for easier integration without build step) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="14" stroke="url(#gradient)" stroke-width="2" />
+                    <path d="M16 8L20 14H12L16 8Z" fill="url(#gradient)" />
+                    <circle cx="16" cy="20" r="3" fill="url(#gradient)" />
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#00d4ff" />
+                            <stop offset="100%" stop-color="#7c3aed" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span data-i18n="app-name">Red de Testigos</span>
+            </div>
+
+            <nav class="nav">
+                <a href="#map" class="nav-link" data-i18n="nav-map">Mapa</a>
+                <a href="#testimonies" class="nav-link" data-i18n="nav-testimonies">Testimonios</a>
+                <a href="#verification" class="nav-link" id="navVerification" data-i18n="nav-verification"
+                    style="display: none;">Verificación</a>
+                <a href="#about" class="nav-link" data-i18n="nav-about">Acerca de</a>
+                <a href="agency.html" class="nav-link" style="color: var(--color-accent-tertiary);">Agencias</a>
+
+                <a href="login.html" id="loginBtn" class="btn btn-secondary"
+                    style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    Login
+                </a>
+
+                <div id="userMenu" style="display: none; align-items: center; gap: 10px;">
+                    <span class="username" style="font-size: 0.9rem; font-weight: 500;">User</span>
+                    <button class="btn btn-secondary btn-icon" id="profileBtn" title="Mi Perfil">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button id="logoutBtn"
+                        style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer;"
+                        title="Cerrar Sesión">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="es">ES</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+                <button class="btn btn-primary" id="submitTestimonyBtn" data-i18n="btn-submit">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 5v10M5 10h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    Enviar Testimonio
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title" data-i18n="hero-title">Red de Testigos Confiables</h1>
+            <p class="hero-subtitle" data-i18n="hero-subtitle">
+                Una plataforma descentralizada para validar y compartir testimonios geolocalizados durante crisis
+                humanitarias.
+                Como Waze, pero para la verdad en el terreno.
+            </p>
+
+            <div class="flex-center" style="gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-primary" id="heroSubmitBtn" data-i18n="btn-submit-testimony">
+                    Enviar Testimonio
+                </button>
+                <button class="btn btn-secondary" id="viewMapBtn" data-i18n="btn-view-map">
+                    Ver Mapa en Vivo
+                </button>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalTestimonies">0</span>
+                    <span class="stat-label" data-i18n="stat-testimonies">Testimonios</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="verifiedTestimonies">0</span>
+                    <span class="stat-label" data-i18n="stat-verified">Verificados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="activeWitnesses">0</span>
+                    <span class="stat-label" data-i18n="stat-witnesses">Testigos Activos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="countriesCovered">0</span>
+                    <span class="stat-label" data-i18n="stat-countries">Países</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section" id="map-section">
+        <div class="container">
+            <h2 class="text-center mb-lg" data-i18n="map-title">Mapa de Testimonios en Tiempo Real</h2>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <span style="color: var(--color-text-secondary); font-weight: 500;"
+                        data-i18n="filter-category">Categoría:</span>
+                    <button class="filter-btn active" data-filter="all" data-i18n="filter-all">Todos</button>
+                    <button class="filter-btn" data-filter="medical" data-i18n="filter-medical">Médico</button>
+                    <button class="filter-btn" data-filter="security" data-i18n="filter-security">Seguridad</button>
+                    <button class="filter-btn" data-filter="infrastructure"
+                        data-i18n="filter-infrastructure">Infraestructura</button>
+                    <button class="filter-btn" data-filter="humanitarian"
+                        data-i18n="filter-humanitarian">Humanitario</button>
+                    <button class="filter-btn" data-filter="displacement"
+                        data-i18n="filter-displacement">Desplazamiento</button>
+                </div>
+
+                <div class="filter-group mt-sm">
+                    <span style="color: var(--color-text-secondary); font-weight: 500;"
+                        data-i18n="filter-verification">Verificación:</span>
+                    <button class="filter-btn active" data-filter-verification="all"
+                        data-i18n="filter-all">Todos</button>
+                    <button class="filter-btn" data-filter-verification="verified"
+                        data-i18n="filter-verified-only">Verificados</button>
+                    <button class="filter-btn" data-filter-verification="trusted"
+                        data-i18n="filter-trusted">Confiables</button>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonies Section -->
+    <section class="section" id="testimonies">
+        <div class="container">
+            <div class="flex-between mb-lg">
+                <h2 class="text-center" style="margin: 0;" data-i18n="testimonies-title">Testimonios Recientes</h2>
+                <div class="view-toggle"
+                    style="background: var(--color-bg-tertiary); padding: 4px; border-radius: var(--radius-full); display: flex;">
+                    <button class="btn-icon active" id="viewGridBtn"
+                        style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M1 1h6v6H1V1zm8 0h6v6H9V1zM1 9h6v6H1V9zm8 0h6v6H9V9z" />
+                        </svg>
+                    </button>
+                    <button class="btn-icon" id="viewTimelineBtn"
+                        style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M2 1h12v2H2V1zm0 4h12v2H2V5zm0 4h12v2H2V9zm0 4h12v2H2v-2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="testimoniesContainer">
+                <div class="grid grid-3" id="testimoniesGrid">
+                    <!-- Testimony cards will be inserted here by JavaScript -->
+                </div>
+                <div class="timeline hidden" id="testimoniesTimeline">
+                    <!-- Timeline items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about" style="background: var(--color-bg-secondary);">
+        <div class="container">
+            <h2 class="text-center mb-lg" data-i18n="about-title">¿Cómo Funciona?</h2>
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📍</div>
+                    <h3 data-i18n="about-step1-title">1. Envía tu Testimonio</h3>
+                    <p data-i18n="about-step1-desc">
+                        Comparte lo que estás viendo en el terreno con ubicación, fotos y detalles. Tu identidad puede
+                        permanecer anónima.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                    <h3 data-i18n="about-step2-title">2. Verificación Comunitaria</h3>
+                    <p data-i18n="about-step2-desc">
+                        Otros testigos en la misma área pueden corroborar tu testimonio, aumentando su credibilidad.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌍</div>
+                    <h3 data-i18n="about-step3-title">3. Difusión Global</h3>
+                    <p data-i18n="about-step3-desc">
+                        Los testimonios verificados se publican en el mapa para que el mundo conozca la verdad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Submit Testimony Modal -->
+    <div class="modal" id="submitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="modal-title">Enviar Testimonio</h3>
+                <button class="btn btn-icon btn-secondary" id="closeModalBtn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="testimonyForm">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-category">Categoría *</label>
+                        <select class="form-select" id="category" required>
+                            <option value="" data-i18n="form-select-category">Selecciona una categoría</option>
+                            <option value="medical" data-i18n="filter-medical">Emergencia Médica</option>
+                            <option value="security" data-i18n="filter-security">Incidente de Seguridad</option>
+                            <option value="infrastructure" data-i18n="filter-infrastructure">Daño a Infraestructura
+                            </option>
+                            <option value="humanitarian" data-i18n="filter-humanitarian">Ayuda Humanitaria</option>
+                            <option value="displacement" data-i18n="filter-displacement">Desplazamiento</option>
+                            <option value="general" data-i18n="filter-general">General</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-title">Título *</label>
+                        <input type="text" class="form-input" id="title" required
+                            placeholder="Breve descripción de lo que presenciaste">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-description">Descripción Detallada *</label>
+                        <textarea class="form-textarea" id="description" required
+                            placeholder="Describe lo que viste, escuchaste o experimentaste..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-location">Ubicación *</label>
+                        <input type="text" class="form-input" id="location" required
+                            placeholder="Ciudad, región o coordenadas">
+                        <button type="button" class="btn btn-secondary mt-sm" id="useCurrentLocation"
+                            style="width: 100%;">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <circle cx="8" cy="8" r="2" fill="currentColor" />
+                                <path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <span data-i18n="btn-use-location">Usar mi ubicación actual</span>
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-witness-name">Nombre del Testigo (Opcional)</label>
+                        <input type="text" class="form-input" id="witnessName" placeholder="Anónimo">
+                        <p style="font-size: 0.875rem; color: var(--color-text-tertiary); margin-top: 0.5rem;"
+                            data-i18n="form-anonymous-note">
+                            Puedes permanecer anónimo. Tu identidad estará protegida.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="form-media">Fotos/Videos (Opcional)</label>
+                        <input type="file" class="form-input" id="media" accept="image/*,video/*" multiple>
+                        <p style="font-size: 0.875rem; color: var(--color-text-tertiary); margin-top: 0.5rem;"
+                            data-i18n="form-media-note">
+                            Los datos EXIF serán eliminados automáticamente para proteger tu privacidad.
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn" data-i18n="btn-cancel">Cancelar</button>
+                <button class="btn btn-primary" id="submitBtn" data-i18n="btn-submit-final">Enviar Testimonio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="utils.js"></script>
+    <script src="data-store.js"></script>
+    <script src="verification-system.js"></script>
+    <script src="testimony-manager.js"></script>
+    <script src="components.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

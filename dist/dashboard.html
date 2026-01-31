@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Profesional - Red de Testigos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--color-bg-secondary);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--color-accent-secondary);
+            font-weight: 500;
+        }
+
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--color-bg-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chart-container {
+            background: var(--color-bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            height: 300px;
+        }
+
+        .recent-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .recent-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-text-tertiary);
+        }
+
+        .recent-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <adiv class="logo" style="margin-bottom: 2rem;">
+                <span>Red Intelligence</span>
+            </adiv>
+
+            <div
+                style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <p
+                    style="font-size: 0.75rem; color: #FFA500; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">
+                    Plan Actual</p>
+                <div style="font-weight: bold;">Agencias / ONG</div>
+                <a href="#"
+                    style="font-size: 0.8rem; color: var(--color-text-tertiary); display: block; margin-top: 0.5rem;">Gestionar
+                    Suscripción</a>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#" class="sidebar-link active">📊 Dashboard Global</a></li>
+                <li><a href="#" class="sidebar-link">🗺️ Mapa de Calor</a></li>
+                <li><a href="#" class="sidebar-link">⚠️ Alertas Inteligentes</a></li>
+                <li><a href="#" class="sidebar-link">📑 Reportes Exportables</a></li>
+                <li><a href="#" class="sidebar-link">⚙️ API Keys</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="flex-between mb-lg">
+                <div>
+                    <h1>Centro de Mando</h1>
+                    <p>Vista general de incidentes en tiempo real</p>
+                </div>
+                <div class="flex" style="align-items: center; gap: 1rem;">
+                    <div style="position: relative;">
+                        <span class="status-dot"
+                            style="background: var(--color-success); box-shadow: 0 0 10px var(--color-success);"></span>
+                        Sistema Operativo
+                    </div>
+                    <button class="btn btn-secondary">
+                        <span style="margin-right: 8px;">📥</span> Exportar CSV
+                    </button>
+                    <div
+                        style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        AG
+                    </div>
+                </div>
+            </header>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Incidentes (24h)</div>
+                    <div class="kpi-value">1,248</div>
+                    <div style="color: var(--color-success); font-size: 0.875rem;">↑ 12% vs ayer</div>
+                </div>
+                <div class="kpi-card">
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Verificados</div>
+                    <div class="kpi-value">856</div>
+                    <div style="color: var(--color-success); font-size: 0.875rem;">68.5% tasa de éxito</div>
+                </div>
+                <div class="kpi-card">
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Zonas Críticas</div>
+                    <div class="kpi-value">4</div>
+                    <div style="color: var(--color-warning); font-size: 0.875rem;">2 nuevas detectadas</div>
+                </div>
+                <div class="kpi-card">
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Voluntarios Activos</div>
+                    <div class="kpi-value">3,102</div>
+                    <div style="color: var(--color-text-tertiary); font-size: 0.875rem;">En 12 regiones</div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-bottom: 2rem;">
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem;">Tendencia de Incidentes</h3>
+                    <canvas id="incidentsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem;">Distribución por Categoría</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="kpi-card" style="padding: 0; overflow: hidden;">
+                <div
+                    style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between;">
+                    <h3 style="font-size: 1.1rem;">Feed de Verificación Prioritaria</h3>
+                    <button
+                        style="background: none; border: none; color: var(--color-accent-primary); cursor: pointer;">Ver
+                        Todo</button>
+                </div>
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Ubicación</th>
+                            <th>Estado</th>
+                            <th>Confianza</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="utils.js"></script>
+    <script src="data-store.js"></script>
+    <script>
+        // Initialize Charts
+        const ctx1 = document.getElementById('incidentsChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                datasets: [{
+                    label: 'Reportes Recibidos',
+                    data: [120, 190, 300, 500, 450, 600],
+                    borderColor: '#00d4ff',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Médico', 'Infraestructura', 'Seguridad', 'Otros'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } }
+            }
+        });
+
+        // Populate Table (Simulated Logic)
+        function updateTable() {
+            const tbody = document.getElementById('feedTableBody');
+            const testimonies = dataStore.getTestimonies().slice(0, 5);
+
+            tbody.innerHTML = testimonies.map(t => `
+                <tr>
+                    <td style="font-family: monospace; color: var(--color-text-tertiary);">#${t.id.substr(-6)}</td>
+                    <td><span class="tag tag-${t.category}">${t.category}</span></td>
+                    <td>${t.location}</td>
+                    <td>
+                        <span class="badge badge-${t.verificationStatus}">
+                            ${t.verificationStatus === 'verified' ? '✓ Validado' : '⏳ Pendiente'}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="width: 100px; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${Math.random() * 40 + 60}%; height: 100%; background: ${t.verificationStatus === 'verified' ? 'var(--color-success)' : 'var(--color-accent-primary)'};"></div>
+                        </div>
+                    </td>
+                    <td style="color: var(--color-text-tertiary);">${new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                </tr>
+            `).join('');
+        }
+
+        updateTable();
+        // Simulate live updates
+        setInterval(updateTable, 5000);
+    </script>
+</body>
+
+</html>

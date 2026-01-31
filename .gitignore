@@ -1,0 +1,21 @@
+# System
+.DS_Store
+Thumbs.db
+.gemini/
+.git/
+.vscode/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Build output (optional - depends if we want to commit dist or not)
+# We ARE committing dist for now as it is a simple static site
+# dist/

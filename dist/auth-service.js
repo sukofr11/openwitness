@@ -1,0 +1,160 @@
+// auth-service.js - Handles Authentication (Local & Firebase)
+
+class AuthService {
+    constructor() {
+        this.currentUser = null;
+        this.init();
+    }
+
+    init() {
+        // Check for existing session
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+            this.updateUI();
+        }
+
+        // Listen for Firebase auth state if available
+        if (window.firebaseServices && window.firebaseServices.isAvailable) {
+            window.firebaseServices.auth.onAuthStateChanged(user => {
+                if (user) {
+                    this.currentUser = {
+                        id: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0],
+                        photoURL: user.photoURL,
+                        isAnonymous: user.isAnonymous
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                } else {
+                    this.currentUser = null;
+                    localStorage.removeItem('currentUser');
+                }
+                this.updateUI();
+            });
+        }
+    }
+
+    // ==================== AUTH ACTIONS ====================
+    async login(email, password) {
+        if (window.firebaseServices && window.firebaseServices.isAvailable) {
+            try {
+                await window.firebaseServices.auth.signInWithEmailAndPassword(email, password);
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        } else {
+            // Local Simulation
+            console.log('Simulating login for:', email);
+            this.currentUser = {
+                id: 'user-' + Date.now(),
+                email: email,
+                name: email.split('@')[0],
+                photoURL: null,
+                role: 'user'
+            };
+            // Hack for demo: Check if it's an agency email
+            if (email.includes('agency') || email.includes('press')) {
+                this.currentUser.role = 'agency';
+                this.currentUser.subscription = 'agency';
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            this.updateUI();
+            return { success: true };
+        }
+    }
+
+    async loginWithGoogle() {
+        if (window.firebaseServices && window.firebaseServices.isAvailable) {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await window.firebaseServices.auth.signInWithPopup(provider);
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        } else {
+            // Local Simulation
+            this.currentUser = {
+                id: 'google-user-' + Date.now(),
+                email: 'demo@gmail.com',
+                name: 'Usuario Demo',
+                photoURL: null,
+                role: 'user'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            this.updateUI();
+            return { success: true };
+        }
+    }
+
+    async register(email, password) {
+        if (window.firebaseServices && window.firebaseServices.isAvailable) {
+            try {
+                await window.firebaseServices.auth.createUserWithEmailAndPassword(email, password);
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        } else {
+            // Local Simulation
+            return this.login(email, password); // For demo, register = login
+        }
+    }
+
+    async logout() {
+        if (window.firebaseServices && window.firebaseServices.isAvailable) {
+            await window.firebaseServices.auth.signOut();
+        }
+        this.currentUser = null;
+        localStorage.removeItem('currentUser');
+        this.updateUI();
+        window.location.reload(); // Refresh to clear state
+    }
+
+    // ==================== UI UPDATES ====================
+    updateUI() {
+        const loginBtn = document.getElementById('loginBtn');
+        const userMenu = document.getElementById('userMenu'); // We need to add this to HTML
+        const profileBtn = document.getElementById('profileBtn');
+
+        if (this.currentUser) {
+            // User is logged in
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (userMenu) {
+                userMenu.style.display = 'block';
+                userMenu.querySelector('.username').textContent = this.currentUser.name;
+            }
+            if (profileBtn) profileBtn.style.display = 'flex'; // Show profile button
+
+            // Sync with DataStore witness ID
+            // If we have a real user ID, use that as witness ID
+            if (this.currentUser.id) {
+                const existingWitnessId = localStorage.getItem('currentWitnessId');
+                if (existingWitnessId !== this.currentUser.id) {
+                    // Start using the real Auth ID as Witness ID
+                    localStorage.setItem('currentWitnessId', this.currentUser.id);
+                    // Copy reputation if exists? (Complex logic omitted for MVP)
+                }
+            }
+        } else {
+            // User is logged out
+            if (loginBtn) loginBtn.style.display = 'block';
+            if (userMenu) userMenu.style.display = 'none';
+            // Don't hide profile button entirely in demo, maybe prompt login
+        }
+    }
+
+    getUser() {
+        return this.currentUser;
+    }
+
+    isAuthenticated() {
+        return !!this.currentUser;
+    }
+}
+
+// Global instance
+const authService = new AuthService();
