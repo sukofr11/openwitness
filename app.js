@@ -502,9 +502,21 @@ class App {
             // Set initial state style
             viewGridBtn.style.color = 'var(--color-accent-primary)';
         }
+    }
 
-        // Start Real-time simulation
-        this.startRealTimeSimulation();
+    // ==================== SIMULATION ====================
+    startRealTimeSimulation() {
+        console.log('📡 Real-time intelligence stream active');
+        // Initial fetch
+        if (window.newsService) {
+            window.newsService.fetchRecentIntelligence();
+        }
+
+        // Setup ticker simulation (visual only for premium feel)
+        setInterval(() => {
+            const stats = dataStore.getStatistics();
+            this.updateStatistics();
+        }, 15000);
     }
 
     // ==================== FILTERS ====================
@@ -585,14 +597,14 @@ class App {
             this.closeSubmitModal();
 
             // Initial render
-            this.renderMarkers(this.testimonyManager.getTestimonies());
-            this.updateStats();
+            this.addTestimoniesToMap();
+            this.updateStatistics();
 
             // Start News Intelligence Ingestion
             if (window.newsService) {
                 window.newsService.fetchRecentIntelligence().then(() => {
-                    this.renderMarkers(this.testimonyManager.getTestimonies());
-                    this.updateStats();
+                    this.addTestimoniesToMap();
+                    this.updateStatistics();
                 });
             }
 

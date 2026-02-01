@@ -111,27 +111,73 @@
             </div>
 
             <div class="profile-section">
-                <h2>Datos del Testigo</h2>
-                <div class="data-grid">
-                    <div class="data-item">
-                        <label>ID de Testigo</label>
-                        <p id="witnessId">#---</p>
+                <div class="flex-between">
+                    <h2>Datos del Testigo</h2>
+                    <button class="btn btn-secondary btn-sm" id="editProfileBtn">Editar Perfil</button>
+                </div>
+
+                <div id="profileDisplay">
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <label>ID de Testigo</label>
+                            <p id="witnessId">#---</p>
+                        </div>
+                        <div class="data-item">
+                            <label>Especialidad</label>
+                            <p id="userSpecialty">No definida</p>
+                        </div>
+                        <div class="data-item">
+                            <label>Reputación</label>
+                            <p id="userReputation">0 pts</p>
+                        </div>
                     </div>
-                    <div class="data-item">
-                        <label>Reputación</label>
-                        <p id="userReputation">0 pts</p>
+                    <div class="data-item mt-md">
+                        <label>Biografía</label>
+                        <p id="userBio" style="font-style: italic; color: var(--color-text-secondary);">Sin biografía...
+                        </p>
                     </div>
                 </div>
+
+                <form id="profileForm" class="hidden" style="margin-top: 1.5rem;">
+                    <div class="grid grid-2 gap-md">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="editName" class="form-input" style="width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label>Especialidad</label>
+                            <select id="editSpecialty" class="form-input" style="width: 100%;">
+                                <option value="reporter">Periodista / Reportero</option>
+                                <option value="doctor">Médico / Salud</option>
+                                <option value="ngo">ONG / Voluntario</option>
+                                <option value="civilian">Civil / Testigo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mt-md">
+                        <label>Biografía</label>
+                        <textarea id="editBio" class="form-input" style="width: 100%; height: 100px;"></textarea>
+                    </div>
+                    <div class="flex-end gap-sm mt-md">
+                        <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
 
             <div class="profile-section">
                 <h2>Suscripción</h2>
                 <div id="subscriptionInfo">
                     <p class="mb-sm">Plan Actual: <span class="subscription-badge" id="planName">GRATUITO</span></p>
-                    <p style="font-size: 0.875rem; color: var(--color-text-tertiary);">Tu cuenta gratuita permite
+                    <p id="trialNotice" style="font-size: 0.875rem; color: var(--color-text-tertiary);">Tu cuenta
+                        gratuita permite
                         reportar incidentes pero no acceder al panel de análisis avanzado.</p>
                 </div>
-                <a href="agency.html" id="upgradeBtn" class="btn btn-primary mt-md">Mejorar Plan</a>
+                <div id="subscriptionActions" class="mt-md">
+                    <a href="agency.html" id="upgradeBtn" class="btn btn-primary">Mejorar Plan</a>
+                    <button class="btn btn-secondary" id="demoSubscribeBtn" style="display: none;">Activar Suscripción
+                        Demo</button>
+                </div>
             </div>
 
             <button class="btn btn-secondary mt-lg" id="logoutProfileBtn" style="width: 100%;">Cerrar Sesión</button>
@@ -156,14 +202,70 @@
                 document.getElementById('userEmail').textContent = user.email;
                 document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
 
-                // Load additional data from Firestore or LocalStorage
+                // Load additional data
                 const witnessId = localStorage.getItem('currentWitnessId') || 'W-' + user.id.substr(-6);
                 document.getElementById('witnessId').textContent = witnessId;
+                document.getElementById('userSpecialty').textContent = user.specialty || 'No definida';
+                document.getElementById('userBio').textContent = user.bio || 'Sin biografía...';
 
-                // Simple check for subscription (demo)
+                // Reputation
+                const witness = dataStore.getWitness(witnessId);
+                if (witness) {
+                    document.getElementById('userReputation').textContent = `${witness.reputation} pts`;
+                }
+
+                // Subscription
                 if (user.role === 'agency' || user.role === 'enterprise') {
                     document.getElementById('planName').textContent = user.role.toUpperCase();
+                    document.getElementById('trialNotice').textContent = 'Acceso Premium Activo';
                     document.getElementById('upgradeBtn').style.display = 'none';
+                    document.getElementById('demoSubscribeBtn').style.display = 'none';
+                } else {
+                    document.getElementById('demoSubscribeBtn').style.display = 'inline-block';
+                }
+
+                // Populate Form
+                document.getElementById('editName').value = user.name || '';
+                document.getElementById('editSpecialty').value = user.specialty || 'civilian';
+                document.getElementById('editBio').value = user.bio || '';
+            });
+
+            // Toggle Edit Mode
+            const editBtn = document.getElementById('editProfileBtn');
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            const displayArea = document.getElementById('profileDisplay');
+            const formArea = document.getElementById('profileForm');
+
+            editBtn.addEventListener('click', () => {
+                displayArea.classList.add('hidden');
+                formArea.classList.remove('hidden');
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                displayArea.classList.remove('hidden');
+                formArea.classList.add('hidden');
+            });
+
+            // Form Submit
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const updates = {
+                    name: document.getElementById('editName').value,
+                    specialty: document.getElementById('editSpecialty').value,
+                    bio: document.getElementById('editBio').value
+                };
+
+                await authService.updateUserProfile(updates);
+                displayArea.classList.remove('hidden');
+                formArea.classList.add('hidden');
+                showNotification('Perfil actualizado', 'success');
+            });
+
+            // Demo Subscribe
+            document.getElementById('demoSubscribeBtn').addEventListener('click', async () => {
+                if (confirm('¿Deseas activar la suscripción de Agencias para esta cuenta?')) {
+                    await authService.subscribe('agency');
+                    showNotification('Suscripción activada', 'success');
                 }
             });
 

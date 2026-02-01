@@ -205,6 +205,16 @@ class DataStore {
         return JSON.parse(localStorage.getItem(this.WITNESS_KEY)) || [];
     }
 
+    // ==================== EXPORT ====================
+    exportData() {
+        return {
+            testimonies: this.getTestimonies(),
+            witnesses: this.getWitnesses(),
+            exportDate: new Date().toISOString(),
+            version: '1.2.0'
+        };
+    }
+
     // ==================== STATISTICS ====================
     getStatistics() {
         const testimonies = this.getTestimonies();

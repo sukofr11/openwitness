@@ -404,6 +404,31 @@
         updateTable();
         // Simulate live updates
         setInterval(updateTable, 5000);
+
+        // Export Actions
+        const exportBtn = document.querySelector('.btn-secondary[data-i18n="dash-export"]');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const data = dataStore.exportData();
+                exportToCSV(data.testimonies, `OpenWitness_Testimonies_${new Date().toISOString().split('T')[0]}.csv`);
+                showNotification('Exportando listado de testimonios...', 'info');
+            });
+        }
+
+        const genReportBtn = document.querySelector('.btn-primary.mt-md');
+        if (genReportBtn && genReportBtn.parentElement.querySelector('p').textContent.includes('GOP')) {
+            // Already handled elsewhere or generic? Let's check the container
+        }
+
+        // Find the "Generar Reporte Semanal" button specifically
+        const weeklyReportBtn = Array.from(document.querySelectorAll('.btn-primary')).find(b => b.textContent.includes('Semanal'));
+        if (weeklyReportBtn) {
+            weeklyReportBtn.addEventListener('click', () => {
+                const data = dataStore.exportData();
+                exportToJSON(data, `OpenWitness_Full_Report_${new Date().toISOString().split('T')[0]}.json`);
+                showNotification('Generando reporte completo (JSON)...', 'info');
+            });
+        }
     </script>
 </body>
 

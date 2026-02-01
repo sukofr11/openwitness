@@ -3,6 +3,8 @@
 class AuthService {
     constructor() {
         this.currentUser = null;
+        this.authCallbacks = [];
+        this.trialDurationDays = 15;
         this.init();
     }
 
@@ -12,6 +14,7 @@ class AuthService {
         if (savedUser) {
             this.currentUser = JSON.parse(savedUser);
             this.updateUI();
+            setTimeout(() => this.notifyAuthChange(), 100);
         }
 
         // Listen for Firebase auth state if available
@@ -31,6 +34,7 @@ class AuthService {
                     localStorage.removeItem('currentUser');
                 }
                 this.updateUI();
+                this.notifyAuthChange();
             });
         }
     }
@@ -62,6 +66,7 @@ class AuthService {
 
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             this.updateUI();
+            this.notifyAuthChange();
             return { success: true };
         }
     }
@@ -86,6 +91,7 @@ class AuthService {
             };
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             this.updateUI();
+            this.notifyAuthChange();
             return { success: true };
         }
     }
@@ -111,6 +117,7 @@ class AuthService {
                 this.currentUser = userData;
                 localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
                 this.updateUI();
+                this.notifyAuthChange();
                 await this.checkSubscriptionStatus();
                 return { success: true };
             } catch (error) {
@@ -129,7 +136,47 @@ class AuthService {
         this.currentUser = null;
         localStorage.removeItem('currentUser');
         this.updateUI();
+        this.notifyAuthChange();
         window.location.href = 'index.html'; // Redirect to home
+    }
+
+    onAuthStateChanged(callback) {
+        this.authCallbacks.push(callback);
+        if (this.currentUser) callback(this.currentUser);
+    }
+
+    notifyAuthChange() {
+        this.authCallbacks.forEach(cb => {
+            try { cb(this.currentUser); } catch (e) { console.error(e); }
+        });
+    }
+
+    async updateUserProfile(updates) {
+        if (this.currentUser) {
+            this.currentUser = { ...this.currentUser, ...updates };
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+
+            if (window.firebaseServices && window.firebaseServices.isAvailable) {
+                try {
+                    await window.firebaseServices.db.collection('users').doc(this.currentUser.id).update(updates);
+                } catch (error) {
+                    console.error('Firestore update failed:', error);
+                }
+            }
+            this.updateUI();
+            this.notifyAuthChange();
+            return { success: true };
+        }
+        return { success: false, error: 'No user logged in' };
+    }
+
+    async subscribe(plan) {
+        return this.updateUserProfile({
+            role: plan === 'enterprise' ? 'enterprise' : 'agency',
+            subscription: plan,
+            subscriptionStatus: 'active',
+            isExpired: false
+        });
     }
 
     // ==================== SUBSCRIPTION STATUS ====================
