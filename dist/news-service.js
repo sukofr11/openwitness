@@ -104,55 +104,37 @@ class NewsService {
      * In a production environment, this would be an RSS/API bridge.
      */
     runGlobalWireSimulation() {
-        const simulatedItems = [
-            {
-                id: 'wire_001',
-                title: 'Reuters: New geopolitical tensions in the Persian Gulf',
-                description: 'Naval movements detected near the Strait of Hormuz. High alert in regional bases.',
-                location: 'Iran',
-                source: 'Reuters Global',
-                category: 'geopolitical'
-            },
-            {
-                id: 'wire_002',
-                title: 'AP: Displacement surge reported in Eastern DRC',
-                description: 'Thousands moving towards Goma as clashes intensify. Humanitarian response overstretched.',
-                location: 'DRC',
-                source: 'Associated Press',
-                category: 'displacement'
-            },
-            {
-                id: 'wire_003',
-                title: 'AFP: Security analysis of Northern Ukraine border',
-                description: 'Intelligence report indicates increased troop rotation and defensive fortification construction.',
-                location: 'Ukraine',
-                source: 'Agence France-Presse',
-                category: 'security'
-            },
-            {
-                id: 'wire_004',
-                title: 'ICG Expert Alert: Early warning on Ethiopia escalation',
-                description: 'Analysis suggests high risk of flashpoints in the Amhara region over the next 48 hours.',
-                location: 'Ethiopia',
-                source: 'International Crisis Group',
-                category: 'security'
-            },
-            {
-                id: 'wire_005',
-                title: 'Bloomberg: Supply chain risk elevated in Indo-Pacific',
-                description: 'Tensions over maritime borders leading to increased insurance premiums for cargo vessels.',
-                location: 'Taiwan',
-                source: 'Bloomberg News',
-                category: 'geopolitical'
-            }
+        const globalWires = [
+            { id: 'reuters_01', title: 'Reuters: Naval movements detected near the Strait of Hormuz', description: 'U.S. and regional forces on high alert as tensions rise in the Persian Gulf.', location: 'Iran', source: 'Reuters', category: 'geopolitical' },
+            { id: 'ap_01', title: 'AP: Displacement surge reported in Eastern DRC', description: 'Thousands moving towards Goma as clashes intensify. Humanitarian response overstretched.', location: 'DRC', source: 'Associated Press', category: 'displacement' },
+            { id: 'afp_01', title: 'AFP: Security rotation on Northern Ukraine border', description: 'Intelligence report indicates increased troop rotation and defensive fortification construction.', location: 'Ukraine', source: 'Agence France-Presse', category: 'security' },
+            { id: 'bloomberg_01', title: 'Bloomberg: Maritime insurance premiums spike in Indo-Pacific', description: 'Supply chain risks elevated as territorial disputes impact shipping lanes.', location: 'Taiwan', source: 'Bloomberg News', category: 'geopolitical' },
+            { id: 'cnn_01', title: 'CNN: Breaking - Explosions reported in West Sudan', description: 'Local reports of heavy artillery fire near civilian centers. Verification in progress.', location: 'Sudan', source: 'CNN World', category: 'security' }
         ];
 
-        simulatedItems.forEach(item => {
+        const thinkTanks = [
+            { id: 'icg_01', title: 'ICG Alert: Risk of flashpoints in Amhara region', description: 'Strategic analysis suggest high escalation probability over the next 48 hours.', location: 'Ethiopia', source: 'International Crisis Group', category: 'strategic' },
+            { id: 'cfr_01', title: 'CFR Insight: The shifting landscape of Middle East alliances', description: 'New diplomatic shifts could impact regional stability and security architecture.', location: 'Israel', source: 'Council on Foreign Relations', category: 'strategic' },
+            { id: 'stratfor_01', title: 'Stratfor: Emerging threats to South China Sea navigation', description: 'Risk assessment for commercial vessels increases as naval exercises expand.', location: 'Taiwan', source: 'Stratfor / RANE', category: 'strategic' }
+        ];
+
+        const regionalSources = [
+            { id: 'kyiv_01', title: 'Kyiv Independent: Missile strikes intercepted over Kharkiv', description: 'Air defense systems active across the region. Damage assessment ongoing.', location: 'Ukraine', source: 'The Kyiv Independent', category: 'security' },
+            { id: 'haaretz_01', title: 'Haaretz: Security cabinet meets on Northern border escalation', description: 'High-level meeting to discuss defensive measures following recent skirmishes.', location: 'Israel', source: 'Haaretz', category: 'security' },
+            { id: 'aljazeera_01', title: 'Al Jazeera: Humanitarian corridors blocked in Gaza', description: 'Ongoing restrictions preventing critical aid delivery. U.N. warning issued.', location: 'Gaza Strip', source: 'Al Jazeera English', category: 'humanitarian' },
+            { id: 'meduza_01', title: 'Meduza: Reports of supply chain disruptions in Rostov region', description: 'Internal logistics facing challenges as security measures are tightened.', location: 'Russia', source: 'Meduza', category: 'logistics' }
+        ];
+
+        // Combine all sources
+        const allSources = [...globalWires, ...thinkTanks, ...regionalSources];
+
+        // Ingest sources that aren't already in the dataStore
+        allSources.forEach(item => {
             if (window.dataStore && !window.dataStore.getTestimony(item.id)) {
                 this.ingestAsTestimony({
                     ...item,
-                    coords: this.fallbacks[item.location],
-                    trustScore: 95
+                    coords: this.fallbacks[item.location] || { lat: 0, lng: 0 },
+                    trustScore: item.source.includes('Crisis Group') || item.source.includes('Reuters') ? 99 : 92
                 });
             }
         });
@@ -192,8 +174,9 @@ class NewsService {
 
     inferCategory(title) {
         const t = title.toLowerCase();
+        if (t.includes('analysis') || t.includes('strategic') || t.includes('forecast')) return 'strategic';
         if (t.includes('bomb') || t.includes('attack') || t.includes('security') || t.includes('combat')) return 'security';
-        if (t.includes('intelligence') || t.includes('strategic') || t.includes('tensions')) return 'geopolitical';
+        if (t.includes('intelligence') || t.includes('geopolitical') || t.includes('tensions')) return 'geopolitical';
         if (t.includes('food') || t.includes('aid') || t.includes('humanitarian')) return 'humanitarian';
         if (t.includes('displaced') || t.includes('refugee')) return 'displacement';
         return 'general';

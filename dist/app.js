@@ -32,7 +32,20 @@ class App {
             this.updateStatistics();
             this.setupScrollAnimations();
 
-            // Live Intelligence Ingestion - Start only after map and dataStore are ready
+            // Sync Auth UI
+            if (window.authService) {
+                authService.updateUI();
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        if (confirm('¿Deseas cerrar sesión?')) {
+                            authService.logout();
+                        }
+                    });
+                }
+            }
+
+            // Live Intelligence Ingestion
             if (window.newsService) {
                 console.log('🚀 Starting News Service from App Setup...');
                 window.newsService.startAutoUpdate();

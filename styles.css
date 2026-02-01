@@ -628,6 +628,11 @@ a:hover {
   color: var(--color-geopolitical);
 }
 
+.tag-strategic {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+}
+
 .tag-general {
   background: rgba(16, 185, 129, 0.2);
   color: var(--color-general);

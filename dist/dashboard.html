@@ -376,6 +376,21 @@
             const lang = getLanguage();
             updatePageLanguage(lang);
 
+            // Sync Auth UI
+            if (window.authService) {
+                authService.updateUI();
+
+                // Add logout listener if button exists
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                            authService.logout();
+                        }
+                    });
+                }
+            }
+
             // Start News Service if available
             if (window.newsService) {
                 console.log('🚀 Starting News Service from Dashboard...');

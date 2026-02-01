@@ -20,6 +20,7 @@ function createTestimonyCard(testimony) {
         safezone: 'var(--color-success)',
         logistics: 'var(--color-accent-tertiary)',
         geopolitical: 'var(--color-accent-secondary)',
+        strategic: 'var(--color-strategic)',
         general: 'var(--color-general)'
     };
 
@@ -97,6 +98,7 @@ function createMapMarker(testimony) {
         safezone: '#10b981',
         logistics: '#6366f1',
         geopolitical: '#a855f7',
+        strategic: '#00d4ff',
         general: '#64748b'
     };
 
@@ -259,27 +261,26 @@ function showTestimonyDetails(testimonyId) {
 
 // ==================== PROFILE MODAL ====================
 function showUserProfile() {
-    const witnessId = localStorage.getItem('currentWitnessId');
-    if (!witnessId) {
-        showNotification('Aún no tienes un perfil. Envía un testimonio para crear uno.', 'info');
+    const user = authService.getUser();
+    if (!user) {
+        showNotification('Debes iniciar sesión para ver tu perfil.', 'warning');
         return;
     }
 
+    const witnessId = localStorage.getItem('currentWitnessId') || user.id;
     const witness = dataStore.getWitness(witnessId);
-    if (!witness) {
-        showNotification('Perfil no encontrado.', 'error');
-        return;
-    }
-
-    const badges = verificationSystem.getWitnessBadges(witnessId);
+    const badges = witness ? verificationSystem.getWitnessBadges(witnessId) : [];
     const myTestimonies = dataStore.getTestimonies().filter(t => t.witnessId === witnessId);
 
     const modal = document.createElement('div');
     modal.className = 'modal active';
-    modal.innerHTML = `
+    modal.id = 'profileModal';
+
+    const renderContent = (isEditing = false) => {
+        const content = `
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <h3 class="modal-title">Mi Perfil de Testigo</h3>
+                <h3 class="modal-title">${isEditing ? 'Editar Perfil' : 'Mi Perfil de Testigo'}</h3>
                 <button class="btn btn-icon btn-secondary" onclick="this.closest('.modal').remove()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -289,47 +290,97 @@ function showUserProfile() {
             
             <div class="modal-body">
                 <div class="profile-header" style="text-align: center; margin-bottom: 2rem;">
-                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; font-weight: bold;">
-                        ${witnessId.substr(-1).toUpperCase()}
+                    <div class="user-initial" style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; font-weight: bold;">
+                        ${(user.name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">ID: ${witnessId}</div>
                     <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem;">
                         ${badges.map(b => `<span class="badge badge-${b.type}">${b.icon} ${b.label}</span>`).join('')}
                     </div>
                 </div>
-                
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                    <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-accent-primary);">${witness.reputation}</div>
-                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Reputación</div>
+
+                ${isEditing ? `
+                    <div class="form-group mb-md">
+                        <label>Nombre Público</label>
+                        <input type="text" id="editName" class="form-input" value="${user.name || ''}" style="width: 100%;">
                     </div>
-                    <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-success);">${witness.verifiedTestimonies}</div>
-                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Verificados</div>
+                    <div class="form-group mb-md">
+                        <label>Biografía / Especialidad</label>
+                        <textarea id="editBio" class="form-textarea" style="width: 100%; min-height: 80px;">${user.bio || user.specialty || ''}</textarea>
                     </div>
-                    <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-text-primary);">${witness.testimoniesSubmitted}</div>
-                        <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Enviados</div>
+                ` : `
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <h2 class="username">${user.name || 'Usuario'}</h2>
+                        <p style="color: var(--color-text-secondary); font-style: italic;">${user.bio || user.specialty || 'Sin biografía...'}</p>
                     </div>
-                </div>
-                
-                <h4 style="margin-bottom: 1rem;">Mis Testimonios Recientes</h4>
-                <div style="max-height: 300px; overflow-y: auto;">
-                    ${myTestimonies.length > 0 ? myTestimonies.slice(0, 5).map(t => `
-                        <div style="padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 500;">${t.title}</div>
-                                <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">${formatDate(t.timestamp)}</div>
-                            </div>
-                            <span class="badge badge-${t.verificationStatus}">${getVerificationLabel(t.verificationStatus)}</span>
+                    
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-accent-primary);">${witness ? witness.reputation : 0}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Reputación</div>
                         </div>
-                    `).join('') : '<p style="color: var(--color-text-tertiary); text-align: center;">No has enviado testimonios aún.</p>'}
-                </div>
+                        <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-success);">${witness ? witness.verifiedTestimonies : 0}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Verificados</div>
+                        </div>
+                        <div style="background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-text-primary);">${witness ? witness.testimoniesSubmitted : 0}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">Enviados</div>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-bottom: 1rem;">Mis Testimonios Recientes</h4>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        ${myTestimonies.length > 0 ? myTestimonies.slice(0, 5).map(t => `
+                            <div style="padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 500;">${t.title}</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-text-tertiary);">${formatDate(t.timestamp)}</div>
+                                </div>
+                                <span class="badge badge-${t.verificationStatus}">${getVerificationLabel(t.verificationStatus)}</span>
+                            </div>
+                        `).join('') : '<p style="color: var(--color-text-tertiary); text-align: center;">No has enviado testimonios aún.</p>'}
+                    </div>
+                `}
+            </div>
+
+            <div class="modal-footer">
+                ${isEditing ? `
+                    <button class="btn btn-secondary" onclick="showUserProfile()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="saveUserProfile()">Guardar Cambios</button>
+                ` : `
+                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cerrar</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('profileModal').innerHTML = \`${renderContent(true)}\` ">Editar Perfil</button>
+                `}
             </div>
         </div>
-    `;
+        `;
+        return content;
+    };
+
+    modal.innerHTML = renderContent(false);
     document.body.appendChild(modal);
 }
+
+// Save User Profile logic
+window.saveUserProfile = async function () {
+    const name = document.getElementById('editName').value;
+    const bio = document.getElementById('editBio').value;
+
+    if (!name.trim()) {
+        showNotification('El nombre no puede estar vacío', 'error');
+        return;
+    }
+
+    const result = await authService.updateUserProfile({ name, bio });
+    if (result.success) {
+        showNotification('Perfil actualizado correctamente', 'success');
+        // Refresh modal to show new data
+        showUserProfile();
+    } else {
+        showNotification('Error al actualizar: ' + result.error, 'error');
+    }
+};
 
 // ==================== VERIFICATION CENTER MODAL ====================
 function showVerificationCenter() {
@@ -496,6 +547,7 @@ function getCategoryLabel(category) {
         safezone: 'Zona Segura',
         logistics: 'Logística',
         geopolitical: 'Geopolítica',
+        strategic: 'Análisis Estratégico',
         general: 'General'
     };
     return labels[category] || category;
