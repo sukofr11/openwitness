@@ -37,9 +37,13 @@ echo (Si sale una ventana de Login, inicia sesion)
 git push -u origin main
 
 echo.
+echo 4. Desplegando en Firebase Hosting...
+firebase deploy --only hosting
+
+echo.
 echo ===================================================
 echo   LISTO!
 echo ===================================================
-echo Ahora ve a Netlify y espera 1 minuto.
+echo Tu sitio ya esta publicado en Firebase Hosting.
 echo.
 pause
