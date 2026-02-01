@@ -15,11 +15,11 @@ const firebaseConfig = {
 // Check if Firebase is available (loaded via CDN)
 const isFirebaseLoaded = typeof firebase !== 'undefined';
 
-let app, auth, db, storage;
+let firebaseApp, auth, db, storage;
 
 if (isFirebaseLoaded && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
     try {
-        app = firebase.initializeApp(firebaseConfig);
+        firebaseApp = firebase.initializeApp(firebaseConfig);
         auth = firebase.auth();
         db = firebase.firestore();
         storage = firebase.storage();
@@ -32,4 +32,4 @@ if (isFirebaseLoaded && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
 }
 
 // Export for other modules (if using modules) or global access
-window.firebaseServices = { auth, db, storage, isAvailable: !!app };
+window.firebaseServices = { auth, db, storage, isAvailable: !!firebaseApp };
