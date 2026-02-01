@@ -93,7 +93,9 @@ function createMapMarker(testimony) {
         infrastructure: '#fb923c',
         humanitarian: '#3b82f6',
         displacement: '#8b5cf6',
-        general: '#10b981'
+        safezone: '#10b981',
+        logistics: '#6366f1',
+        general: '#64748b'
     };
 
     const icon = categoryIcons[testimony.category] || '📍';

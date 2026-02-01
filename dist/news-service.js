@@ -39,12 +39,10 @@ class NewsService {
     }
 
     async processNewsItem(item) {
-        // Check for duplicates before expensive processing
         if (window.dataStore && window.dataStore.getTestimony('reliefweb_' + item.id)) {
             return;
         }
 
-        // Fetch full fields for each item
         try {
             const detailRes = await fetch(item.href);
             const detailData = await detailRes.json();
@@ -52,16 +50,27 @@ class NewsService {
 
             const title = report.title;
             const primaryCountry = report.primary_country ? report.primary_country.name : 'Unknown';
-            const locationString = `${primaryCountry}`; // Could try to extract city from title/body in future
 
             // Geocode location
-            const coords = await this.geocodeLocation(locationString);
+            let coords = await this.geocodeLocation(primaryCountry);
+
+            // Fallback for common countries if geocoding fails
+            if (!coords) {
+                const fallbacks = {
+                    'Ukraine': { lat: 48.3794, lng: 31.1656 },
+                    'Gaza Strip': { lat: 31.3547, lng: 34.3088 },
+                    'Sudan': { lat: 12.8628, lng: 30.2176 },
+                    'Yemen': { lat: 15.5527, lng: 48.5164 },
+                    'Palestine': { lat: 31.9522, lng: 35.2332 }
+                };
+                coords = fallbacks[primaryCountry];
+            }
 
             if (coords) {
                 this.ingestAsTestimony({
                     id: 'reliefweb_' + item.id,
                     title: title,
-                    description: `[REAL-TIME NEWS] ${title}. Fuente: ReliefWeb. Ver reporte original en: ${report.url}`,
+                    description: `[REAL-TIME NEWS] ${title}. Fuente: ReliefWeb.`,
                     location: primaryCountry,
                     coords: coords,
                     source: 'ReliefWeb Intelligence'
@@ -74,7 +83,7 @@ class NewsService {
 
     async geocodeLocation(locationName) {
         try {
-            const response = await fetch(this.nominatimUrl + encodeURIComponent(locationName));
+            const response = await fetch(`${this.nominatimUrl}${encodeURIComponent(locationName)}&User-Agent=OpenWitness`);
             const data = await response.json();
 
             if (data && data.length > 0) {
@@ -101,23 +110,20 @@ class NewsService {
             witnessId: 'OW_AI_NEWS',
             witnessName: data.source,
             verificationStatus: 'verified',
-            trustScore: 95,
+            trustScore: 98,
             isNews: true
         };
 
         if (window.dataStore) {
-            // Check for duplicates
-            const existing = window.dataStore.getTestimony(testimony.id);
-            if (!existing) {
-                window.dataStore.saveTestimony(testimony);
-                console.log(`✅ Intelligence ingested: ${testimony.title}`);
-            }
+            window.dataStore.saveTestimony(testimony);
+            // Force immediate UI hydration
+            window.dispatchEvent(new Event('data-updated'));
         }
     }
 
     inferCategory(title) {
         const t = title.toLowerCase();
-        if (t.includes('bomb') || t.includes('attack') || t.includes('conflict') || t.includes('ataque') || t.includes('combate')) return 'security';
+        if (t.includes('bomb') || t.includes('attack') || t.includes('conflict') || t.includes('ataque') || t.includes('combate') || t.includes('war')) return 'security';
         if (t.includes('health') || t.includes('medical') || t.includes('hospital') || t.includes('médico')) return 'medical';
         if (t.includes('food') || t.includes('aid') || t.includes('humanitarian') || t.includes('ayuda')) return 'humanitarian';
         if (t.includes('displaced') || t.includes('refugee') || t.includes('desplazado')) return 'displacement';
