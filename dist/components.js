@@ -19,6 +19,7 @@ function createTestimonyCard(testimony) {
         displacement: 'var(--color-displacement)',
         safezone: 'var(--color-success)',
         logistics: 'var(--color-accent-tertiary)',
+        geopolitical: 'var(--color-accent-secondary)',
         general: 'var(--color-general)'
     };
 
@@ -95,6 +96,7 @@ function createMapMarker(testimony) {
         displacement: '#8b5cf6',
         safezone: '#10b981',
         logistics: '#6366f1',
+        geopolitical: '#a855f7',
         general: '#64748b'
     };
 
@@ -493,6 +495,7 @@ function getCategoryLabel(category) {
         displacement: 'Desplazamiento',
         safezone: 'Zona Segura',
         logistics: 'Logística',
+        geopolitical: 'Geopolítica',
         general: 'General'
     };
     return labels[category] || category;

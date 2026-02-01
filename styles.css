@@ -25,6 +25,7 @@
   --color-infrastructure: #fb923c;
   --color-humanitarian: #3b82f6;
   --color-displacement: #8b5cf6;
+  --color-geopolitical: #a855f7;
   --color-general: #10b981;
 
   /* Text Colors */
@@ -620,6 +621,11 @@ a:hover {
 .tag-displacement {
   background: rgba(139, 92, 246, 0.2);
   color: var(--color-displacement);
+}
+
+.tag-geopolitical {
+  background: rgba(168, 85, 247, 0.2);
+  color: var(--color-geopolitical);
 }
 
 .tag-general {
