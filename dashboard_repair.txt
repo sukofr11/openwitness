@@ -1,0 +1,27 @@
+                    </td>
+                    <td style="color: var(--color-text-tertiary);">${new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                </tr>
+            `).join('');
+        }
+
+        updateTable();
+        // Simulate live updates
+        setInterval(updateTable, 5000);
+    </script>
+
+    <!-- External Scripts (Moved to bottom) -->
+    <script src="debug-error.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
+    
+    <!-- Core App Logic -->
+    <script src="utils.js"></script>
+    <script src="data-store.js"></script>
+    <script src="components.js"></script>
+</body>
+</html>

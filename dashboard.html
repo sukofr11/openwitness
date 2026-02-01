@@ -227,9 +227,22 @@
         </main>
     </div>
 
-    <!-- Load scripts -->
+    <!-- External Scripts -->
+    <script src="debug-error.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
+
+    <!-- Core Logic -->
     <script src="utils.js"></script>
     <script src="data-store.js"></script>
+    <script src="components.js"></script>
+
     <script>
         // Initialize Charts
         const ctx1 = document.getElementById('incidentsChart').getContext('2d');

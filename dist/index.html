@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Red de Testigos Confiables - Plataforma para validar y publicar testimonios geolocalizados durante crisis humanitarias">
-    <title>Red de Testigos Confiables | Testimonios Verificados en Crisis Humanitarias</title>
+    <title>OpenWitness Global | Verified Crisis Intelligence</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap" rel="stylesheet">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,13 +22,8 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Firebase SDK (Compat version for easier integration without build step) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth-service.js"></script>
+    <!-- Firebase SDK (Compat version) moved to body for performance and readiness -->
+
 </head>
 
 <body>
@@ -46,7 +42,8 @@
                         </linearGradient>
                     </defs>
                 </svg>
-                <span data-i18n="app-name">Red de Testigos</span>
+                <span data-i18n="app-name"
+                    style="font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">OpenWitness</span>
             </div>
 
             <nav class="nav">
@@ -54,8 +51,8 @@
                 <a href="#testimonies" class="nav-link" data-i18n="nav-testimonies">Testimonios</a>
                 <a href="#verification" class="nav-link" id="navVerification" data-i18n="nav-verification"
                     style="display: none;">Verificación</a>
-                <a href="#about" class="nav-link" data-i18n="nav-about">Acerca de</a>
-                <a href="agency.html" class="nav-link" style="color: var(--color-accent-tertiary);">Agencias</a>
+                <a href="#about" class="nav-link" data-i18n="nav-about">Info</a>
+                <a href="agency.html" class="nav-link" style="color: var(--color-accent-tertiary);">Partners</a>
 
                 <a href="login.html" id="loginBtn" class="btn btn-secondary"
                     style="padding: 0.5rem 1rem; font-size: 0.9rem;">
@@ -89,7 +86,7 @@
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 5v10M5 10h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                     </svg>
-                    Enviar Testimonio
+                    Reportar
                 </button>
             </nav>
         </div>
@@ -98,11 +95,11 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title" data-i18n="hero-title">Red de Testigos Confiables</h1>
+            <h1 class="hero-title" data-i18n="hero-title" style="font-family: 'Outfit', sans-serif;">OpenWitness Global
+            </h1>
             <p class="hero-subtitle" data-i18n="hero-subtitle">
-                Una plataforma descentralizada para validar y compartir testimonios geolocalizados durante crisis
-                humanitarias.
-                Como Waze, pero para la verdad en el terreno.
+                Inteligencia civil verificada para zonas de conflicto y crisis humanitarias.
+                La verdad geolocalizada, en tiempo real.
             </p>
 
             <div class="flex-center" style="gap: 1rem; margin-top: 2rem;">
@@ -325,6 +322,16 @@
     </div>
 
     <!-- Scripts -->
+    <script src="debug-error.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <!-- App Logic -->
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="utils.js"></script>

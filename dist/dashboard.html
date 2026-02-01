@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Profesional - Red de Testigos</title>
+    <title>Dashboard | OpenWitness PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 
@@ -120,9 +120,9 @@
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
-            <adiv class="logo" style="margin-bottom: 2rem;">
-                <span>Red Intelligence</span>
-            </adiv>
+            <div class="logo" style="margin-bottom: 2rem;">
+                <span style="font-family: 'Outfit', sans-serif;">OpenWitness Intelligence</span>
+            </div>
 
             <div
                 style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
@@ -227,9 +227,22 @@
         </main>
     </div>
 
-    <!-- Load scripts -->
+    <!-- External Scripts -->
+    <script src="debug-error.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
+
+    <!-- Core Logic -->
     <script src="utils.js"></script>
     <script src="data-store.js"></script>
+    <script src="components.js"></script>
+
     <script>
         // Initialize Charts
         const ctx1 = document.getElementById('incidentsChart').getContext('2d');

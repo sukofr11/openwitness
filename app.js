@@ -23,28 +23,55 @@ class App {
     }
 
     setup() {
-        // Initialize language
-        const lang = getLanguage();
-        updatePageLanguage(lang);
+        console.log("App setup started...");
 
-        // Initialize map
-        this.initMap();
+        // 1. Initialize language
+        try {
+            const lang = getLanguage();
+            updatePageLanguage(lang);
+        } catch (e) { console.error("Language init failed", e); }
 
-        // Load testimonies
-        this.loadTestimonies();
+        // 2. Initialize map
+        try {
+            this.initMap();
+        } catch (e) {
+            console.error("Map init failed", e);
+            showNotification("Error cargando el mapa. Revise su conexión.", "error");
+        }
 
-        // Update statistics
-        this.updateStatistics();
+        // 3. Load testimonies
+        try {
+            this.loadTestimonies();
+        } catch (e) { console.error("Testimonies load failed", e); }
 
-        // Setup event listeners
-        this.setupEventListeners();
+        // 4. Update statistics
+        try {
+            this.updateStatistics();
+        } catch (e) { console.error("Stats update failed", e); }
 
-        // Animate statistics on scroll
-        this.setupScrollAnimations();
+        // 5. Setup event listeners
+        try {
+            this.setupEventListeners();
+        } catch (e) { console.error("Event listeners failed", e); }
+
+        // 6. Animate statistics on scroll
+        try {
+            this.setupScrollAnimations();
+        } catch (e) { console.error("Animations failed", e); }
+
+        console.log("App setup finished.");
     }
 
     // ==================== MAP INITIALIZATION ====================
     initMap() {
+        if (!document.getElementById('map')) return; // Exit if no map container
+
+        if (typeof L === 'undefined') {
+            console.error("Leaflet (L) is not defined. Map cannot load.");
+            alert("Error crítico: No se pudo cargar el motor de mapas. Verifique su conexión a internet.");
+            return;
+        }
+
         // Initialize Leaflet map with a wider view (Global/Europe focus initially, or world)
         // Set to world view: [20, 0], zoom 2
         this.map = L.map('map').setView([20, 0], 2);

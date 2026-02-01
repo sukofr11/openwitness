@@ -22,13 +22,8 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Firebase SDK (Compat version for easier integration without build step) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth-service.js"></script>
+    <!-- Firebase SDK (Compat version) moved to body for performance and readiness -->
+
 </head>
 
 <body>
@@ -327,6 +322,16 @@
     </div>
 
     <!-- Scripts -->
+    <script src="debug-error.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <!-- App Logic -->
+    <script src="firebase-config.js"></script>
+    <script src="auth-service.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="utils.js"></script>

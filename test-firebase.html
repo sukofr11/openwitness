@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Aislado: Firebase</title>
+    <style>
+        body {
+            background: #222;
+            color: #fff;
+            font-family: monospace;
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Diagnóstico de Backend (Firebase)</h1>
+    <div id="log">Iniciando pruebas...<br></div>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <!-- Config -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        function log(msg, color = 'white') {
+            const div = document.getElementById('log');
+            div.innerHTML += `<span style="color: ${color}">> ${msg}</span><br>`;
+        }
+
+        window.onload = function () {
+            log("1. Verificando SDKs...");
+            if (typeof firebase !== 'undefined') log("✅ Firebase SDK cargado", "lightgreen");
+            else return log("❌ Firebase SDK NO cargado", "red");
+
+            log("2. Verificando Configuración...");
+            if (typeof firebaseConfig !== 'undefined') log("✅ Configuración encontrada", "lightgreen");
+            else return log("❌ Configuración NO encontrada", "red");
+
+            log("3. Intentando Conexión Auth...");
+            if (firebase.auth()) {
+                log("✅ Auth Service listo", "lightgreen");
+                firebase.auth().onAuthStateChanged(user => {
+                    if (user) log(`👤 Usuario logueado: ${user.email}`, "cyan");
+                    else log("👤 No hay usuario logueado (pero el servicio funciona)", "yellow");
+                });
+            } else {
+                log("❌ Auth Service falló", "red");
+            }
+
+            log("4. Intentando Conexión Firestore...");
+            try {
+                const db = firebase.firestore();
+                log("✅ Firestore Service instanciado", "lightgreen");
+
+                // Try a simple read
+                log("   Intentando leer colección 'testimonies'...", "gray");
+                db.collection('testimonies').limit(1).get()
+                    .then(snap => {
+                        log(`✅ Lectura exitosa. Documentos encontrados: ${snap.size}`, "lightgreen");
+                    })
+                    .catch(err => {
+                        log(`⚠️ Error de lectura (puede ser permisos): ${err.message}`, "orange");
+                        if (err.code === 'permission-denied') log("   Nota: Esto es normal si no has configurado las reglas de seguridad aún.", "gray");
+                    });
+
+            } catch (e) {
+                log(`❌ Error crítico Firestore: ${e.message}`, "red");
+            }
+        };
+    </script>
+</body>
+
+</html>
