@@ -156,6 +156,19 @@ class AuthService {
             this.currentUser = { ...this.currentUser, ...updates };
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
 
+            // Sync with DataStore witness record
+            const witnessId = localStorage.getItem('currentWitnessId');
+            if (witnessId && window.dataStore) {
+                const witness = window.dataStore.getWitness(witnessId);
+                if (witness) {
+                    window.dataStore.saveWitness({
+                        ...witness,
+                        name: this.currentUser.name,
+                        bio: this.currentUser.bio || this.currentUser.specialty
+                    });
+                }
+            }
+
             if (window.firebaseServices && window.firebaseServices.isAvailable) {
                 try {
                     await window.firebaseServices.db.collection('users').doc(this.currentUser.id).update(updates);
@@ -230,34 +243,50 @@ class AuthService {
 
     // ==================== UI UPDATES ====================
     updateUI() {
-        const loginBtn = document.getElementById('loginBtn');
-        const userMenu = document.getElementById('userMenu'); // We need to add this to HTML
-        const profileBtn = document.getElementById('profileBtn');
+        const loginBtns = document.querySelectorAll('#loginBtn, .login-btn');
+        const userMenus = document.querySelectorAll('#userMenu, .user-menu');
+        const profileBtns = document.querySelectorAll('#profileBtn, .profile-btn');
 
         if (this.currentUser) {
             // User is logged in
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (userMenu) {
-                userMenu.style.display = 'flex';
-                userMenu.querySelector('.username').textContent = this.currentUser.name;
-            }
-            if (profileBtn) profileBtn.style.display = 'flex'; // Show profile button
+            loginBtns.forEach(btn => btn.style.display = 'none');
+
+            userMenus.forEach(menu => {
+                menu.style.display = 'flex';
+                // Update all username instances
+                menu.querySelectorAll('.username').forEach(el => {
+                    el.textContent = this.currentUser.name || 'Usuario';
+                });
+                // Update all user initials
+                menu.querySelectorAll('.user-initial').forEach(el => {
+                    el.textContent = (this.currentUser.name || 'U').charAt(0).toUpperCase();
+                });
+                // Update role labels
+                menu.querySelectorAll('.user-role').forEach(el => {
+                    if (this.currentUser.role === 'agency') el.textContent = 'Suscripción Agency';
+                    else if (this.currentUser.role === 'enterprise') el.textContent = 'Suscripción Enterprise';
+                    else el.textContent = 'Plan Gratuito';
+                });
+            });
+
+            profileBtns.forEach(btn => btn.style.display = 'flex');
 
             // Sync with DataStore witness ID
-            // If we have a real user ID, use that as witness ID
             if (this.currentUser.id) {
                 const existingWitnessId = localStorage.getItem('currentWitnessId');
                 if (existingWitnessId !== this.currentUser.id) {
-                    // Start using the real Auth ID as Witness ID
                     localStorage.setItem('currentWitnessId', this.currentUser.id);
-                    // Copy reputation if exists? (Complex logic omitted for MVP)
                 }
             }
         } else {
             // User is logged out
-            if (loginBtn) loginBtn.style.display = 'block';
-            if (userMenu) userMenu.style.display = 'none';
-            // Don't hide profile button entirely in demo, maybe prompt login
+            loginBtns.forEach(btn => btn.style.display = 'block');
+            userMenus.forEach(menu => menu.style.display = 'none');
+            profileBtns.forEach(btn => {
+                if (!btn.classList.contains('demo-allowed')) {
+                    btn.style.display = 'none';
+                }
+            });
         }
     }
 

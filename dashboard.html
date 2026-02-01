@@ -167,15 +167,18 @@
                         <button class="btn btn-secondary">
                             <span style="margin-right: 8px;">📥</span> <span data-i18n="dash-export">Exportar CSV</span>
                         </button>
-                        <div class="flex" style="align-items: center; gap: 12px; margin-left: auto;">
+                        <div id="userMenu" class="flex" style="align-items: center; gap: 12px; margin-left: auto;">
                             <div style="text-align: right;">
-                                <div style="font-size: 0.85rem; font-weight: 600;">Felix Delgado (Suko)</div>
-                                <div style="font-size: 0.7rem; color: var(--color-success);">Suscripción Agency</div>
+                                <div class="username" style="font-size: 0.85rem; font-weight: 600;">Cargando...</div>
+                                <div class="user-role" style="font-size: 0.7rem; color: var(--color-success);">
+                                    Cargando...</div>
                             </div>
                             <div class="flex" style="align-items: center; gap: 8px;">
-                                <div
-                                    style="width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.1);">
-                                    FD
+                                <div onclick="showUserProfile()" class="user-initial"
+                                    style="width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                    U
                                 </div>
                                 <button id="logoutBtn" class="btn btn-icon btn-secondary" title="Cerrar Sesión"
                                     style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
