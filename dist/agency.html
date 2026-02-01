@@ -145,8 +145,8 @@
                         <li><span>✓</span> Contacto directo con testigos</li>
                         <li><span>✓</span> Alertas por Email (5/día)</li>
                     </ul>
-                    <a href="dashboard.html?plan=journo" class="btn btn-secondary"
-                        style="width: 100%; margin-top: 1rem;">Comenzar</a>
+                    <button onclick="initiateCheckout('journalist', 'Periodista Independiente', '$9/mes')"
+                        class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Comenzar</button>
                 </div>
 
                 <!-- Agency Plan -->
@@ -167,7 +167,8 @@
                         <li><span>✓</span> Soporte Prioritario 24/7</li>
                     </ul>
                     <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;"
-                        onclick="simulatePurchase('agency')">Prueba Gratuita 7 días</button>
+                        onclick="initiateCheckout('agency', 'Agencias & ONGs', '$299/mes')">Prueba Gratuita 7
+                        días</button>
                 </div>
 
                 <!-- Enterprise Plan -->
@@ -182,7 +183,8 @@
                         <li><span>✓</span> Análisis Forense de Datos</li>
                         <li><span>✓</span> SLA de 99.9%</li>
                     </ul>
-                    <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Contactar Ventas</button>
+                    <button onclick="initiateCheckout('enterprise', 'Enterprise / Gov', 'Custom')"
+                        class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Contactar Ventas</button>
                 </div>
             </div>
         </div>
@@ -195,24 +197,105 @@
         </div>
     </footer>
 
+    <!-- External Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="utils.js"></script>
+    <script src="data-store.js"></script>
+    <script src="auth-service.js"></script>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Finalizar Suscripción</h3>
+                <button class="btn btn-icon btn-secondary" onclick="closeCheckout()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="selectedPlanInfo" class="mb-lg"
+                    style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                    <p style="color: var(--color-text-tertiary); font-size: 0.8rem;">Plan Seleccionado</p>
+                    <h4 id="planDisplayName" style="color: var(--color-accent-secondary);">---</h4>
+                    <p id="planDisplayPrice" style="font-weight: bold; font-size: 1.2rem;">$0/mes</p>
+                </div>
+
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label>Titular de la tarjeta</label>
+                        <input type="text" class="form-input" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group mt-md">
+                        <label>Número de tarjeta</label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-input" placeholder="**** **** **** ****" required
+                                style="letter-spacing: 2px;">
+                            <span
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); opacity: 0.5;">💳</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-2 gap-sm mt-md">
+                        <div class="form-group">
+                            <label>Vencimiento</label>
+                            <input type="text" class="form-input" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CVC</label>
+                            <input type="text" class="form-input" placeholder="***" required>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: 2rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                        <p style="font-size: 0.8rem; color: #10b981;">🔒 Pago seguro encriptado con tecnología de
+                            OpenWitness Core.</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCheckout()">Cancelar</button>
+                <button class="btn btn-primary" id="confirmPaymentBtn" onclick="processPayment()">Pagar y
+                    Activar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function simulatePurchase(plan) {
-            const btn = event.target;
+        let currentPlan = null;
+
+        function initiateCheckout(plan, name, price) {
+            currentPlan = plan;
+            document.getElementById('planDisplayName').textContent = name;
+            document.getElementById('planDisplayPrice').textContent = price;
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        async function processPayment() {
+            if (!authService.isAuthenticated()) {
+                alert('Por favor, inicia sesión para completar la suscripción.');
+                window.location.href = 'login.html?redirect=agency.html';
+                return;
+            }
+
+            const btn = document.getElementById('confirmPaymentBtn');
             const originalText = btn.innerText;
-            btn.innerText = 'Procesando...';
+            btn.innerText = 'Validando tarjeta...';
             btn.disabled = true;
 
-            setTimeout(() => {
-                alert('¡Suscripción exitosa!');
-                // Save to local storage mock
-                const user = JSON.parse(localStorage.getItem('currentUser')) || { id: 'temp-' + Date.now(), name: 'Agencia Demo' };
-                user.subscription = plan;
-                user.role = 'agency';
-                localStorage.setItem('currentUser', JSON.stringify(user));
+            setTimeout(async () => {
+                btn.innerText = 'Procesando pago...';
 
-                // Redirect to dashboard
-                window.location.href = 'dashboard.html';
-            }, 1500);
+                setTimeout(async () => {
+                    await authService.subscribe(currentPlan);
+                    alert('¡Suscripción confirmada! Bienvenido a nuestra red de inteligencia.');
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            }, 1000);
         }
     </script>
 </body>

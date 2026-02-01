@@ -430,11 +430,16 @@ function updatePageLanguage(lang) {
 
 // ==================== ANIMATION UTILITIES ====================
 function animateValue(element, start, end, duration) {
+    if (!element) return;
     const range = end - start;
     const increment = range / (duration / 16);
     let current = start;
 
     const timer = setInterval(() => {
+        if (!element) {
+            clearInterval(timer);
+            return;
+        }
         current += increment;
         if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
             current = end;

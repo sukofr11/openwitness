@@ -171,8 +171,12 @@ class AuthService {
     }
 
     async subscribe(plan) {
+        let role = 'agency';
+        if (plan === 'enterprise') role = 'enterprise';
+        if (plan === 'journo' || plan === 'journalist' || plan === 'reporter') role = 'reporter';
+
         return this.updateUserProfile({
-            role: plan === 'enterprise' ? 'enterprise' : 'agency',
+            role: role,
             subscription: plan,
             subscriptionStatus: 'active',
             isExpired: false
