@@ -126,38 +126,40 @@
 
             <div
                 style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-                <p
-                    style="font-size: 0.75rem; color: #FFA500; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">
+                <p style="font-size: 0.75rem; color: #FFA500; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;"
+                    data-i18n="dash-plan-title">
                     Plan Actual</p>
                 <div style="font-weight: bold;">Agencias / ONG</div>
-                <a href="#"
-                    style="font-size: 0.8rem; color: var(--color-text-tertiary); display: block; margin-top: 0.5rem;">Gestionar
+                <a href="agency.html"
+                    style="font-size: 0.8rem; color: var(--color-text-tertiary); display: block; margin-top: 0.5rem;"
+                    data-i18n="dash-plan-manage">Gestionar
                     Suscripción</a>
             </div>
 
             <ul class="sidebar-menu">
-                <li><a href="#" class="sidebar-link active">📊 Dashboard Global</a></li>
-                <li><a href="#" class="sidebar-link">🗺️ Mapa de Calor</a></li>
-                <li><a href="#" class="sidebar-link">⚠️ Alertas Inteligentes</a></li>
-                <li><a href="#" class="sidebar-link">📑 Reportes Exportables</a></li>
-                <li><a href="#" class="sidebar-link">⚙️ API Keys</a></li>
+                <li><a href="#" class="sidebar-link active" data-i18n="dash-global">📊 Dashboard Global</a></li>
+                <li><a href="#" class="sidebar-link" data-i18n="dash-heatmap">🗺️ Mapa de Calor</a></li>
+                <li><a href="#" class="sidebar-link" data-i18n="dash-alerts">⚠️ Alertas Inteligentes</a></li>
+                <li><a href="#" class="sidebar-link" data-i18n="dash-reports">📑 Reportes Exportables</a></li>
+                <li><a href="profile.html" class="sidebar-link" data-i18n="nav-profile">👤 Mi Perfil</a></li>
+                <li><a href="#" class="sidebar-link" data-i18n="dash-apikeys">⚙️ API Keys</a></li>
             </ul>
         </aside>
 
         <main class="main-content">
             <header class="flex-between mb-lg">
                 <div>
-                    <h1>Centro de Mando</h1>
-                    <p>Vista general de incidentes en tiempo real</p>
+                    <h1 data-i18n="dash-title">Centro de Mando</h1>
+                    <p data-i18n="dash-subtitle">Vista general de incidentes en tiempo real</p>
                 </div>
                 <div class="flex" style="align-items: center; gap: 1rem;">
                     <div style="position: relative;">
                         <span class="status-dot"
                             style="background: var(--color-success); box-shadow: 0 0 10px var(--color-success);"></span>
-                        Sistema Operativo
+                        <span data-i18n="dash-os">Sistema Operativo</span>
                     </div>
                     <button class="btn btn-secondary">
-                        <span style="margin-right: 8px;">📥</span> Exportar CSV
+                        <span style="margin-right: 8px;">📥</span> <span data-i18n="dash-export">Exportar CSV</span>
                     </button>
                     <div
                         style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -168,22 +170,26 @@
 
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Incidentes (24h)</div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);" data-i18n="dash-kpi-incidents">
+                        Incidentes (24h)</div>
                     <div class="kpi-value">1,248</div>
                     <div style="color: var(--color-success); font-size: 0.875rem;">↑ 12% vs ayer</div>
                 </div>
                 <div class="kpi-card">
-                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Verificados</div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);" data-i18n="dash-kpi-verified">
+                        Verificados</div>
                     <div class="kpi-value">856</div>
                     <div style="color: var(--color-success); font-size: 0.875rem;">68.5% tasa de éxito</div>
                 </div>
                 <div class="kpi-card">
-                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Zonas Críticas</div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);" data-i18n="dash-kpi-zones">
+                        Zonas Críticas</div>
                     <div class="kpi-value">4</div>
                     <div style="color: var(--color-warning); font-size: 0.875rem;">2 nuevas detectadas</div>
                 </div>
                 <div class="kpi-card">
-                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);">Voluntarios Activos</div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-tertiary);" data-i18n="dash-kpi-witnesses">
+                        Voluntarios Activos</div>
                     <div class="kpi-value">3,102</div>
                     <div style="color: var(--color-text-tertiary); font-size: 0.875rem;">En 12 regiones</div>
                 </div>
@@ -203,9 +209,9 @@
             <div class="kpi-card" style="padding: 0; overflow: hidden;">
                 <div
                     style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between;">
-                    <h3 style="font-size: 1.1rem;">Feed de Verificación Prioritaria</h3>
-                    <button
-                        style="background: none; border: none; color: var(--color-accent-primary); cursor: pointer;">Ver
+                    <h3 style="font-size: 1.1rem;" data-i18n="dash-feed-title">Feed de Verificación Prioritaria</h3>
+                    <button style="background: none; border: none; color: var(--color-accent-primary); cursor: pointer;"
+                        data-i18n="dash-feed-viewall">Ver
                         Todo</button>
                 </div>
                 <table class="recent-table">
@@ -272,18 +278,24 @@
         new Chart(ctx2, {
             type: 'doughnut',
             data: {
-                labels: ['Médico', 'Infraestructura', 'Seguridad', 'Otros'],
+                labels: ['Crítica', 'Segura', 'Médico', 'Ayuda', 'Suministros'],
                 datasets: [{
-                    data: [35, 25, 20, 20],
-                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: ['#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#fb923c'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } }
+                plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
             }
+        });
+
+        // Initialize Language
+        document.addEventListener('DOMContentLoaded', () => {
+            const lang = getLanguage();
+            updatePageLanguage(lang);
         });
 
         // Populate Table (Simulated Logic)
@@ -294,7 +306,7 @@
             tbody.innerHTML = testimonies.map(t => `
                 <tr>
                     <td style="font-family: monospace; color: var(--color-text-tertiary);">#${t.id.substr(-6)}</td>
-                    <td><span class="tag tag-${t.category}">${t.category}</span></td>
+                    <td><span class="tag tag-${t.category}">${getCategoryLabel(t.category)}</span></td>
                     <td>${t.location}</td>
                     <td>
                         <span class="badge badge-${t.verificationStatus}">
