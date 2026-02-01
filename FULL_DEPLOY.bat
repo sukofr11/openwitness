@@ -12,6 +12,7 @@ copy /Y index.html dist\
 copy /Y dashboard.html dist\
 copy /Y agency.html dist\
 copy /Y login.html dist\
+copy /Y profile.html dist\
 copy /Y app.js dist\
 copy /Y data-store.js dist\
 copy /Y utils.js dist\
@@ -27,7 +28,7 @@ echo Archivos copiados.
 echo.
 echo 2. Añadiendo a Git...
 git add .
-git commit -m "Fix: Full sync and debug tools"
+git commit -m "Feature: Multi-language (FR/DE/IT), War Categories, Branding & User Profile"
 
 echo.
 echo 3. Subiendo a GitHub...

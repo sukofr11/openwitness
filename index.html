@@ -81,6 +81,9 @@
                 <div class="lang-switcher">
                     <button class="lang-btn active" data-lang="es">ES</button>
                     <button class="lang-btn" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="fr">FR</button>
+                    <button class="lang-btn" data-lang="de">DE</button>
+                    <button class="lang-btn" data-lang="it">IT</button>
                 </div>
                 <button class="btn btn-primary" id="submitTestimonyBtn" data-i18n="btn-submit">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -142,13 +145,18 @@
                 <div class="filter-group">
                     <span style="color: var(--color-text-secondary); font-weight: 500;"
                         data-i18n="filter-category">Categoría:</span>
-                    <button class="filter-btn active" data-filter="all" data-i18n="filter-all">Todos</button>
-                    <button class="filter-btn" data-filter="medical" data-i18n="filter-medical">Médico</button>
-                    <button class="filter-btn" data-filter="security" data-i18n="filter-security">Seguridad</button>
+                    <button class="filter-btn active" data-filter="all" data-i18n="filter-all">Todas</button>
+                    <button class="filter-btn" data-filter="medical" data-i18n="filter-medical">Emergencia
+                        Médica</button>
+                    <button class="filter-btn" data-filter="security" data-i18n="filter-security">Zona Crítica</button>
+                    <button class="filter-btn" data-filter="safezone" data-i18n="filter-safezone">Zona Segura</button>
                     <button class="filter-btn" data-filter="infrastructure"
-                        data-i18n="filter-infrastructure">Infraestructura</button>
-                    <button class="filter-btn" data-filter="humanitarian"
-                        data-i18n="filter-humanitarian">Humanitario</button>
+                        data-i18n="filter-infrastructure">Daños</button>
+                    <button class="filter-btn" data-filter="humanitarian" data-i18n="filter-humanitarian">Ayuda</button>
+                    <button class="filter-btn" data-filter="displacement"
+                        data-i18n="filter-displacement">Refugiados</button>
+                    <button class="filter-btn" data-filter="logistics" data-i18n="filter-logistics">Suministros</button>
+                    data-i18n="filter-humanitarian">Humanitario</button>
                     <button class="filter-btn" data-filter="displacement"
                         data-i18n="filter-displacement">Desplazamiento</button>
                 </div>
@@ -256,14 +264,16 @@
                     <div class="form-group">
                         <label class="form-label" data-i18n="form-category">Categoría *</label>
                         <select class="form-select" id="category" required>
-                            <option value="" data-i18n="form-select-category">Selecciona una categoría</option>
+                            <option value="" data-i18n="form-select-category">Selecciona la naturaleza del incidente
+                            </option>
                             <option value="medical" data-i18n="filter-medical">Emergencia Médica</option>
-                            <option value="security" data-i18n="filter-security">Incidente de Seguridad</option>
+                            <option value="security" data-i18n="filter-security">Zona Crítica (Combate)</option>
+                            <option value="safezone" data-i18n="filter-safezone">Zona Segura</option>
                             <option value="infrastructure" data-i18n="filter-infrastructure">Daño a Infraestructura
                             </option>
                             <option value="humanitarian" data-i18n="filter-humanitarian">Ayuda Humanitaria</option>
                             <option value="displacement" data-i18n="filter-displacement">Desplazamiento</option>
-                            <option value="general" data-i18n="filter-general">General</option>
+                            <option value="logistics" data-i18n="filter-logistics">Logística / Suministros</option>
                         </select>
                     </div>
 

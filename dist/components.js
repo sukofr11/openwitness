@@ -17,6 +17,8 @@ function createTestimonyCard(testimony) {
         infrastructure: 'var(--color-infrastructure)',
         humanitarian: 'var(--color-humanitarian)',
         displacement: 'var(--color-displacement)',
+        safezone: 'var(--color-success)',
+        logistics: 'var(--color-accent-tertiary)',
         general: 'var(--color-general)'
     };
 
@@ -80,6 +82,8 @@ function createMapMarker(testimony) {
         infrastructure: '🏗️',
         humanitarian: '❤️',
         displacement: '👥',
+        safezone: '🛡️',
+        logistics: '📦',
         general: '📍'
     };
 
@@ -481,10 +485,12 @@ function submitReport(testimonyId) {
 function getCategoryLabel(category) {
     const labels = {
         medical: 'Médico',
-        security: 'Seguridad',
-        infrastructure: 'Infraestructura',
-        humanitarian: 'Humanitario',
+        security: 'Zona Crítica',
+        infrastructure: 'Daños',
+        humanitarian: 'Ayuda Hum.',
         displacement: 'Desplazamiento',
+        safezone: 'Zona Segura',
+        logistics: 'Logística',
         general: 'General'
     };
     return labels[category] || category;

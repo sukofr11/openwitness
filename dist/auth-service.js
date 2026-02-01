@@ -111,7 +111,7 @@ class AuthService {
         this.currentUser = null;
         localStorage.removeItem('currentUser');
         this.updateUI();
-        window.location.reload(); // Refresh to clear state
+        window.location.href = 'index.html'; // Redirect to home
     }
 
     // ==================== UI UPDATES ====================

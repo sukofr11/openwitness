@@ -400,7 +400,9 @@ class App {
         // Profile button
         const profileBtn = document.getElementById('profileBtn');
         if (profileBtn) {
-            profileBtn.addEventListener('click', () => showUserProfile());
+            profileBtn.addEventListener('click', () => {
+                window.location.href = 'profile.html';
+            });
         }
 
         // Logout button
