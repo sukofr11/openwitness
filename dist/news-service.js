@@ -5,7 +5,7 @@
 
 class NewsService {
     constructor() {
-        this.apiUrl = 'https://api.reliefweb.int/v1/reports?appname=openwitness&limit=10&sort[]=date:desc';
+        this.apiUrl = 'https://api.reliefweb.int/v1/reports?appname=openwitness&limit=50&sort[]=date:desc';
         this.nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=';
         this.isRunning = false;
         this.updateInterval = 1000 * 60 * 15; // 15 minutes
@@ -68,8 +68,11 @@ class NewsService {
                     'Syria': { lat: 34.8021, lng: 38.9968 },
                     'Ethiopia': { lat: 9.145, lng: 40.4897 },
                     'Myanmar': { lat: 21.9162, lng: 95.9560 },
-                    'DR Congo': { lat: -4.0383, lng: 21.7587 },
-                    'Democratic Republic of the Congo': { lat: -4.0383, lng: 21.7587 }
+                    'Democratic Republic of the Congo': { lat: -4.0383, lng: 21.7587 },
+                    'Afghanistan': { lat: 33.9391, lng: 67.7100 },
+                    'Somalia': { lat: 5.1521, lng: 46.1996 },
+                    'Russia': { lat: 61.5240, lng: 105.3188 },
+                    'Israel': { lat: 31.0461, lng: 34.8516 }
                 };
                 coords = fallbacks[primaryCountry];
             }
@@ -118,7 +121,8 @@ class NewsService {
             description: data.description,
             category: this.inferCategory(data.title),
             location: data.location,
-            coordinates: data.coords,
+            coordinates: data.coords, // Corrected from data.coordinates to data.coords based on processNewsItem
+            country: data.location,
             timestamp: new Date().toISOString(),
             witnessId: 'OW_AI_NEWS',
             witnessName: data.source,
@@ -131,6 +135,7 @@ class NewsService {
             window.dataStore.saveTestimony(testimony);
             // Force immediate UI hydration
             window.dispatchEvent(new Event('data-updated'));
+            console.log(`📡 [NewsService] Data-updated dispatched for ${testimony.id}`);
         }
     }
 

@@ -67,10 +67,9 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
-                    <button id="logoutBtn"
-                        style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer;"
-                        title="Cerrar Sesión">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    <button id="logoutBtn" class="btn btn-icon btn-secondary" title="Cerrar Sesión"
+                        style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                             <polyline points="16 17 21 12 16 7"></polyline>
@@ -328,6 +327,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer"
+        style="padding: 4rem 0; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; margin-top: 4rem;">
+        <div class="container">
+            <p style="color: var(--color-text-tertiary); font-size: 0.9rem;">© 2026 OpenWitness Global Intelligence
+                Network. Todos los derechos reservados.</p>
+            <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 2rem; font-size: 0.8rem;">
+                <a href="#" class="nav-link" style="opacity: 0.6; color: var(--color-text-secondary);">Aviso Legal</a>
+                <a href="#" class="nav-link" style="opacity: 0.6; color: var(--color-text-secondary);">Política de
+                    Privacidad</a>
+                <a href="#" class="nav-link" style="opacity: 0.6; color: var(--color-text-secondary);">Cookies</a>
+                <a href="agency.html" class="nav-link" style="opacity: 0.6; color: var(--color-accent-tertiary);">Portal
+                    de Agencias</a>
+            </div>
+            <p
+                style="margin-top: 2rem; font-size: 0.7rem; color: var(--color-text-tertiary); max-width: 600px; margin-left: auto; margin-right: auto;">
+                OpenWitness es una plataforma de código abierto dedicada a la transparencia informativa. Los testimonios
+                son verificados por nuestra comunidad y algoritmos de IA.
+            </p>
+        </div>
+    </footer>
 
     <!-- Scripts -->
     <script src="debug-error.js"></script>

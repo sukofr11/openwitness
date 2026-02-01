@@ -503,17 +503,18 @@ function showNotification(message, type = 'info', duration = 3000) {
     notification.textContent = message;
     notification.style.cssText = `
         position: fixed;
-        top: 100px;
-        right: 20px;
+        bottom: 2rem;
+        right: 2rem;
         padding: 1rem 1.5rem;
-        background: var(--color-bg-glass);
+        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : 'var(--color-accent-primary)'};
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: var(--radius-md);
-        color: var(--color-text-primary);
+        color: white;
         box-shadow: var(--shadow-lg);
         z-index: 10000;
-        animation: slideInRight 0.3s ease;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
     `;
 
     if (type === 'success') {
@@ -527,8 +528,9 @@ function showNotification(message, type = 'info', duration = 3000) {
     document.body.appendChild(notification);
 
     setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s';
+        setTimeout(() => notification.remove(), 500);
     }, duration);
 }
 
@@ -609,40 +611,59 @@ function throttle(func, limit) {
     };
 }
 // ==================== UI HELPERS ====================
-function showNotification(message, type = 'info') {
-    console.log(`[Notification - ${type}]: ${message}`);
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : 'var(--color-accent-primary)'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: var(--radius-md);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        z-index: 9999;
-        font-weight: 600;
-        animation: slideIn 0.3s ease;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.5s';
-        setTimeout(() => toast.remove(), 500);
-    }, 3000);
-}
+// Removed duplicate showNotification function
 
 // Add animation to head
 if (!document.getElementById('notification-styles')) {
     const style = document.createElement('style');
     style.id = 'notification-styles';
-    style.innerHTML = `
-        @keyframes slideIn {
+    style.textContent = `
+    @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
+    }
     `;
     document.head.appendChild(style);
 }
+
+function initCookieConsent() {
+    if (localStorage.getItem('cookieConsent')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'cookie-banner';
+    banner.style.cssText = `
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 1.5rem;
+        z-index: 10000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        font-size: 0.9rem;
+    `;
+
+    banner.innerHTML = `
+        <p>Utilizamos cookies para mejorar tu experiencia en nuestra red de inteligencia. Al continuar, aceptas nuestra <a href="#" style="color: var(--color-accent-secondary);">Política de Privacidad</a>.</p>
+        <button class="btn btn-primary btn-sm" id="accept-cookies">Aceptar tutto</button>
+    `;
+
+    document.body.appendChild(banner);
+
+    const acceptBtn = document.getElementById('accept-cookies');
+    if (acceptBtn) {
+        acceptBtn.addEventListener('click', () => {
+            localStorage.setItem('cookieConsent', 'true');
+            banner.remove();
+            if (window.showNotification) showNotification('Preferencias de cookies guardadas', 'success');
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initCookieConsent);
