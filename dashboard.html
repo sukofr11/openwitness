@@ -356,6 +356,12 @@
             const lang = getLanguage();
             updatePageLanguage(lang);
 
+            // Start News Service if available
+            if (window.newsService) {
+                console.log('🚀 Starting News Service from Dashboard...');
+                window.newsService.startAutoUpdate();
+            }
+
             // Handle View Switching
             const sidebarLinks = document.querySelectorAll('.sidebar-link[data-view]');
             sidebarLinks.forEach(link => {
@@ -402,8 +408,14 @@
         }
 
         updateTable();
-        // Simulate live updates
-        setInterval(updateTable, 5000);
+        // Listen for updates
+        window.addEventListener('data-updated', () => {
+            console.log('🔄 Dashboard: Data updated, refreshing feed...');
+            updateTable();
+        });
+
+        // Simulate live updates fallback
+        setInterval(updateTable, 10000);
 
         // Export Actions
         const exportBtn = document.querySelector('.btn-secondary[data-i18n="dash-export"]');

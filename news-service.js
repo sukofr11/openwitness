@@ -32,8 +32,9 @@ class NewsService {
                 }
             }
         } catch (error) {
-            console.error("Error fetching news:", error);
+            console.error("❌ [NewsService] Error fetching news list:", error);
         } finally {
+            console.log("🏁 [NewsService] Intelligence fetch cycle completed.");
             this.isRunning = false;
         }
     }
@@ -52,21 +53,29 @@ class NewsService {
             const primaryCountry = report.primary_country ? report.primary_country.name : 'Unknown';
 
             // Geocode location
+            console.log(`🌍 [NewsService] Geocoding: ${primaryCountry}`);
             let coords = await this.geocodeLocation(primaryCountry);
 
             // Fallback for common countries if geocoding fails
             if (!coords) {
+                console.log(`⚠️ [NewsService] Geocoding failed for ${primaryCountry}, checking fallbacks...`);
                 const fallbacks = {
                     'Ukraine': { lat: 48.3794, lng: 31.1656 },
                     'Gaza Strip': { lat: 31.3547, lng: 34.3088 },
                     'Sudan': { lat: 12.8628, lng: 30.2176 },
                     'Yemen': { lat: 15.5527, lng: 48.5164 },
-                    'Palestine': { lat: 31.9522, lng: 35.2332 }
+                    'Palestine': { lat: 31.9522, lng: 35.2332 },
+                    'Syria': { lat: 34.8021, lng: 38.9968 },
+                    'Ethiopia': { lat: 9.145, lng: 40.4897 },
+                    'Myanmar': { lat: 21.9162, lng: 95.9560 },
+                    'DR Congo': { lat: -4.0383, lng: 21.7587 },
+                    'Democratic Republic of the Congo': { lat: -4.0383, lng: 21.7587 }
                 };
                 coords = fallbacks[primaryCountry];
             }
 
             if (coords) {
+                console.log(`✅ [NewsService] Ingesting: ${title} at [${coords.lat}, ${coords.lng}]`);
                 this.ingestAsTestimony({
                     id: 'reliefweb_' + item.id,
                     title: title,
@@ -75,6 +84,8 @@ class NewsService {
                     coords: coords,
                     source: 'ReliefWeb Intelligence'
                 });
+            } else {
+                console.warn(`🛑 [NewsService] No geocoordinates for ${primaryCountry}. Skipping.`);
             }
         } catch (e) {
             console.error("Error processing news item:", e);
@@ -83,7 +94,9 @@ class NewsService {
 
     async geocodeLocation(locationName) {
         try {
-            const response = await fetch(`${this.nominatimUrl}${encodeURIComponent(locationName)}&User-Agent=OpenWitness`);
+            // Respect Nominatim usage policy: no User-Agent header in browser, 
+            // but we can try to be nice. Some proxies might require it.
+            const response = await fetch(`${this.nominatimUrl}${encodeURIComponent(locationName)}`);
             const data = await response.json();
 
             if (data && data.length > 0) {
