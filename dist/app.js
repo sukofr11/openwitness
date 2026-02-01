@@ -9,6 +9,7 @@ class App {
             category: 'all',
             verification: 'all'
         };
+        window.appInstance = this; // Global access for intelligence services
         this.init();
     }
 
@@ -21,45 +22,26 @@ class App {
             this.setup();
         }
     }
-
-    setup() {
-        console.log("App setup started...");
-
-        // 1. Initialize language
+    async setup() {
         try {
-            const lang = getLanguage();
-            updatePageLanguage(lang);
-        } catch (e) { console.error("Language init failed", e); }
-
-        // 2. Initialize map
-        try {
-            this.initMap();
-        } catch (e) {
-            console.error("Map init failed", e);
-            showNotification("Error cargando el mapa. Revise su conexión.", "error");
-        }
-
-        // 3. Load testimonies
-        try {
-            this.loadTestimonies();
-        } catch (e) { console.error("Testimonies load failed", e); }
-
-        // 4. Update statistics
-        try {
-            this.updateStatistics();
-        } catch (e) { console.error("Stats update failed", e); }
-
-        // 5. Setup event listeners
-        try {
+            await this.initMap();
             this.setupEventListeners();
-        } catch (e) { console.error("Event listeners failed", e); }
 
-        // 6. Animate statistics on scroll
-        try {
+            // Core data render
+            this.loadTestimonies();
+            this.updateStatistics();
             this.setupScrollAnimations();
-        } catch (e) { console.error("Animations failed", e); }
 
-        console.log("App setup finished.");
+            // Live Intelligence Ingestion
+            if (window.newsService) {
+                window.newsService.fetchRecentIntelligence();
+            }
+
+            console.log('App setup completed successfully');
+        } catch (error) {
+            console.error('Setup failed:', error);
+            showNotification('Error inicializando componentes. Revisa la consola.', 'error');
+        }
     }
 
     // ==================== MAP INITIALIZATION ====================
@@ -602,10 +584,17 @@ class App {
             // Close modal
             this.closeSubmitModal();
 
-            // Refresh displays
-            this.loadTestimonies();
-            this.addTestimoniesToMap();
-            this.updateStatistics();
+            // Initial render
+            this.renderMarkers(this.testimonyManager.getTestimonies());
+            this.updateStats();
+
+            // Start News Intelligence Ingestion
+            if (window.newsService) {
+                window.newsService.fetchRecentIntelligence().then(() => {
+                    this.renderMarkers(this.testimonyManager.getTestimonies());
+                    this.updateStats();
+                });
+            }
 
             // Clear stored coordinates
             localStorage.removeItem('currentCoordinates');

@@ -16,6 +16,7 @@ copy /Y profile.html dist\
 copy /Y app.js dist\
 copy /Y data-store.js dist\
 copy /Y utils.js dist\
+copy /Y news-service.js dist\
 copy /Y auth-service.js dist\
 copy /Y firebase-config.js dist\
 copy /Y components.js dist\
