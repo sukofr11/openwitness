@@ -5,7 +5,7 @@
 
 class NewsService {
     constructor() {
-        this.apiUrl = 'https://api.reliefweb.int/v1/reports?appname=openwitness&limit=5&sort[]=date:desc';
+        this.apiUrl = 'https://api.reliefweb.int/v1/reports?appname=openwitness&limit=10&sort[]=date:desc';
         this.nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=';
         this.isRunning = false;
         this.updateInterval = 1000 * 60 * 15; // 15 minutes
@@ -39,6 +39,11 @@ class NewsService {
     }
 
     async processNewsItem(item) {
+        // Check for duplicates before expensive processing
+        if (window.dataStore && window.dataStore.getTestimony('reliefweb_' + item.id)) {
+            return;
+        }
+
         // Fetch full fields for each item
         try {
             const detailRes = await fetch(item.href);
@@ -101,10 +106,11 @@ class NewsService {
         };
 
         if (window.dataStore) {
-            window.dataStore.addTestimony(testimony);
-            // Trigger UI update if App instance is available
-            if (window.appInstance && window.appInstance.loadTestimonies) {
-                window.appInstance.loadTestimonies();
+            // Check for duplicates
+            const existing = window.dataStore.getTestimony(testimony.id);
+            if (!existing) {
+                window.dataStore.saveTestimony(testimony);
+                console.log(`✅ Intelligence ingested: ${testimony.title}`);
             }
         }
     }

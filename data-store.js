@@ -93,6 +93,7 @@ class DataStore {
                 .catch(err => console.error('Sync failed', err));
         }
 
+        window.dispatchEvent(new Event('data-updated'));
         return testimony;
     }
 
@@ -168,6 +169,7 @@ class DataStore {
                 window.firebaseServices.db.collection('testimonies').doc(id).update(updates);
             }
 
+            window.dispatchEvent(new Event('data-updated'));
             return testimonies[index];
         }
         return null;
