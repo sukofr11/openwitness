@@ -32,9 +32,10 @@ class App {
             this.updateStatistics();
             this.setupScrollAnimations();
 
-            // Live Intelligence Ingestion
+            // Live Intelligence Ingestion - Start only after map and dataStore are ready
             if (window.newsService) {
-                window.newsService.fetchRecentIntelligence();
+                console.log('🚀 Starting News Service from App Setup...');
+                window.newsService.startAutoUpdate();
             }
 
             console.log('App setup completed successfully');
@@ -305,10 +306,10 @@ class App {
                     `;
                     item.innerHTML = `
                         <div style="display: flex; justify-content: space-between;">
-                            <strong>${t.title}</strong>
+                            <strong>${sanitizeHTML(t.title)}</strong>
                             <span class="tag tag-${t.category}">${getCategoryLabel(t.category)}</span>
                         </div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-top: 0.5rem;">${t.location} • ${formatDateTime(t.timestamp)}</div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-top: 0.5rem;">${sanitizeHTML(t.location)} • ${formatDateTime(t.timestamp)}</div>
                     `;
                     item.onclick = () => showTestimonyDetails(t.id);
                     item.onmouseenter = () => { item.style.background = 'var(--color-bg-tertiary)'; item.style.paddingLeft = '1.5rem'; };
@@ -508,7 +509,7 @@ class App {
     startRealTimeSimulation() {
         console.log('📡 Real-time intelligence stream active');
         // Initial fetch
-        if (window.newsService) {
+        if (window.newsService && !window.newsService.isRunning) {
             window.newsService.fetchRecentIntelligence();
         }
 

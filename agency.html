@@ -62,6 +62,116 @@
             color: var(--color-success);
         }
     </style>
+    <style>
+        /* Pricing & Toggle Styles */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .billing-toggle span {
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            transition: color 0.3s;
+        }
+
+        .billing-toggle span.active {
+            color: var(--color-text-primary);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 3px;
+            background-color: var(--color-accent-primary);
+            transition: .4s;
+            box-shadow: 0 0 10px var(--color-accent-primary);
+        }
+
+        input:checked+.slider {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .price-container {
+            margin: 1.5rem 0;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--color-text-primary);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .price .period {
+            font-size: 1rem;
+            color: var(--color-text-tertiary);
+            font-weight: 400;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -130,13 +240,26 @@
 
     <section class="section" id="pricing" style="background: var(--color-bg-secondary);">
         <div class="container">
-            <h2 class="text-center mb-lg">Planes de Suscripción</h2>
+            <h2 class="text-center mb-md">Planes de Suscripción</h2>
+
+            <div class="billing-toggle mb-lg">
+                <span id="monthlyLabel" class="active">Mensual</span>
+                <label class="switch">
+                    <input type="checkbox" id="billingToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span id="annualLabel">Anual <span class="badge badge-success"
+                        style="font-size: 0.7rem;">-15%</span></span>
+            </div>
+
             <div class="grid grid-3">
                 <!-- Journalist Plan -->
                 <div class="pricing-card">
                     <h3>Periodista Independiente</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;">$9<span
-                            style="font-size: 1rem; color: var(--color-text-tertiary);">/mes</span></div>
+                    <div class="price-container">
+                        <div class="price price-monthly">9,99€<span class="period">/mes</span></div>
+                        <div class="price price-annual hidden">94,99€<span class="period">/año</span></div>
+                    </div>
                     <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Para freelancers cubriendo zonas
                         de conflicto.</p>
                     <ul class="check-list">
@@ -145,8 +268,11 @@
                         <li><span>✓</span> Contacto directo con testigos</li>
                         <li><span>✓</span> Alertas por Email (5/día)</li>
                     </ul>
-                    <button onclick="initiateCheckout('journalist', 'Periodista Independiente', '$9/mes')"
-                        class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Comenzar</button>
+                    <a href="https://buy.stripe.com/5kQ00j4XO6DV3DL1Np00004" id="btn-journo-monthly"
+                        class="btn btn-secondary btn-billing" style="width: 100%; margin-top: 1rem;">Comenzar</a>
+                    <a href="https://buy.stripe.com/8x228r0Hy9Q7fmt3Vx00005" id="btn-journo-annual"
+                        class="btn btn-secondary btn-billing hidden" style="width: 100%; margin-top: 1rem;">Comenzar
+                        Anual</a>
                 </div>
 
                 <!-- Agency Plan -->
@@ -155,8 +281,10 @@
                         style="background: var(--gradient-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; display: inline-block; margin-bottom: 1rem; color: white; font-weight: bold;">
                         MÁS POPULAR</div>
                     <h3>Agencias & ONGs</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;">$299<span
-                            style="font-size: 1rem; color: var(--color-text-tertiary);">/mes</span></div>
+                    <div class="price-container">
+                        <div class="price price-monthly">299€<span class="period">/mes</span></div>
+                        <div class="price price-annual hidden">2.799,99€<span class="period">/año</span></div>
+                    </div>
                     <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Inteligencia completa para
                         equipos de respuesta.</p>
                     <ul class="check-list">
@@ -166,9 +294,11 @@
                         <li><span>✓</span> Exportación CSV/PDF</li>
                         <li><span>✓</span> Soporte Prioritario 24/7</li>
                     </ul>
-                    <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;"
-                        onclick="initiateCheckout('agency', 'Agencias & ONGs', '$299/mes')">Prueba Gratuita 7
-                        días</button>
+                    <a href="https://buy.stripe.com/4gM9ATdukgev2zH9fR00002" id="btn-agency-monthly"
+                        class="btn btn-primary btn-billing" style="width: 100%; margin-top: 1rem;">Contratar Ahora</a>
+                    <a href="https://buy.stripe.com/eVq8wPgGw6DVdel9fR00003" id="btn-agency-annual"
+                        class="btn btn-primary btn-billing hidden" style="width: 100%; margin-top: 1rem;">Contratar
+                        Anual</a>
                 </div>
 
                 <!-- Enterprise Plan -->
@@ -207,110 +337,46 @@
     <script src="data-store.js"></script>
     <script src="auth-service.js"></script>
 
-    <!-- Checkout Modal -->
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="modal-header">
-                <h3>Finalizar Suscripción</h3>
-                <button class="btn btn-icon btn-secondary" onclick="closeCheckout()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div id="selectedPlanInfo" class="mb-lg"
-                    style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                    <p style="color: var(--color-text-tertiary); font-size: 0.8rem;">Plan Seleccionado</p>
-                    <h4 id="planDisplayName" style="color: var(--color-accent-secondary);">---</h4>
-                    <p id="planDisplayPrice" style="font-weight: bold; font-size: 1.2rem;">$0/mes</p>
-                </div>
 
-                <form id="paymentForm">
-                    <div id="stripe-element-mount"
-                        style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;">
-                        <div id="card-element">
-                            <!-- A Stripe Element will be inserted here. -->
-                            <div
-                                style="font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-                                <span>Número de Tarjeta</span>
-                                <span style="opacity: 0.5;">🔒 SSL</span>
-                            </div>
-                            <div
-                                style="background: white; color: #32325d; padding: 0.75rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-family: 'Inter', sans-serif;">
-                                <span style="letter-spacing: 2px;">4242 4242 4242 4242</span>
-                                <div
-                                    style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.8rem; opacity: 0.7;">
-                                    <span>Vence: 12/28</span>
-                                    <span>CVC: 123</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="card-errors" role="alert"
-                            style="color: var(--color-danger); font-size: 0.8rem; margin-top: 10px;"></div>
-                    </div>
-
-                    <div
-                        style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2); display: flex; gap: 10px; align-items: center;">
-                        <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                            <path
-                                d="M40 12H8C5.79086 12 4 13.7909 4 16V32C4 34.2091 5.79086 36 8 36H40C42.2091 36 44 34.2091 44 32V16C44 13.7909 42.2091 12 40 12Z"
-                                fill="#6366F1" />
-                            <path d="M4 20H44V24H4V20Z" fill="white" fill-opacity="0.2" />
-                            <path d="M30 28H38V32H30V28Z" fill="white" fill-opacity="0.3" />
-                        </svg>
-                        <p style="font-size: 0.8rem; color: #a5b4fc; margin: 0;">Transacción protegida por
-                            infraestructuras de Stripe encriptadas de extremo a extremo.</p>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeCheckout()">Cancelar</button>
-                <button class="btn btn-primary" id="confirmPaymentBtn" onclick="processPayment()">Pagar y
-                    Activar</button>
-            </div>
-        </div>
-    </div>
 
     <script>
-        let currentPlan = null;
+        // Billing Toggle Logic
+        const toggle = document.getElementById('billingToggle');
+        const monthlyLabel = document.getElementById('monthlyLabel');
+        const annualLabel = document.getElementById('annualLabel');
 
+        const monthlyPrices = document.querySelectorAll('.price-monthly');
+        const annualPrices = document.querySelectorAll('.price-annual');
+        const monthlyBtns = document.querySelectorAll('a[id$="-monthly"]');
+        const annualBtns = document.querySelectorAll('a[id$="-annual"]');
+
+        toggle.addEventListener('change', () => {
+            const isAnnual = toggle.checked;
+
+            if (isAnnual) {
+                monthlyLabel.classList.remove('active');
+                annualLabel.classList.add('active');
+
+                monthlyPrices.forEach(p => p.classList.add('hidden'));
+                annualPrices.forEach(p => p.classList.remove('hidden'));
+
+                monthlyBtns.forEach(b => b.classList.add('hidden'));
+                annualBtns.forEach(b => b.classList.remove('hidden'));
+            } else {
+                monthlyLabel.classList.add('active');
+                annualLabel.classList.remove('active');
+
+                monthlyPrices.forEach(p => p.classList.remove('hidden'));
+                annualPrices.forEach(p => p.classList.add('hidden'));
+
+                monthlyBtns.forEach(b => b.classList.remove('hidden'));
+                annualBtns.forEach(b => b.classList.add('hidden'));
+            }
+        });
+
+        // Contact Sales fallback
         function initiateCheckout(plan, name, price) {
-            currentPlan = plan;
-            document.getElementById('planDisplayName').textContent = name;
-            document.getElementById('planDisplayPrice').textContent = price;
-            document.getElementById('checkoutModal').classList.add('active');
-        }
-
-        function closeCheckout() {
-            document.getElementById('checkoutModal').classList.remove('active');
-        }
-
-        async function processPayment() {
-            if (!authService.isAuthenticated()) {
-                alert('Por favor, inicia sesión para completar la suscripción.');
-                window.location.href = 'login.html?redirect=agency.html';
-                return;
-            }
-
-            const btn = document.getElementById('confirmPaymentBtn');
-            btn.innerText = 'Contactando con Stripe...';
-            btn.disabled = true;
-
-            try {
-                // Simulate Stripe confirmCardPayment SDK call
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                btn.innerText = 'Pago Procesado ✅';
-                btn.style.background = '#10b981';
-
-                setTimeout(async () => {
-                    await authService.subscribe(currentPlan);
-                    alert('¡Suscripción confirmada via Stripe! Bienvenido a nuestra red de inteligencia.');
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-            } catch (error) {
-                console.error('Stripe payment failed:', error);
-                document.getElementById('card-errors').innerText = 'Error en el procesamiento de tarjeta. Verifica los datos.';
-                btn.innerText = 'Reintentar Pago';
-                btn.disabled = false;
-            }
+            alert('Enviando solicitud para: ' + name + '.\nUn agente se pondrá en contacto pronto.');
         }
     </script>
 </body>

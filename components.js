@@ -27,12 +27,12 @@ function createTestimonyCard(testimony) {
     card.innerHTML = `
         <div class="testimony-header">
             <div class="testimony-avatar" style="background: ${categoryColor};">
-                ${testimony.witnessName.charAt(0).toUpperCase()}
+                ${sanitizeHTML(testimony.witnessName.charAt(0).toUpperCase())}
             </div>
             <div class="testimony-meta">
                 <div class="testimony-author">
-                    ${testimony.witnessName}
-                    ${badges.map(b => `<span class="badge badge-${b.type}">${b.icon} ${b.label}</span>`).join('')}
+                    ${sanitizeHTML(testimony.witnessName)}
+                    ${badges.map(b => `<span class="badge badge-${b.type}">${b.icon} ${sanitizeHTML(b.label)}</span>`).join('')}
                 </div>
                 <div class="testimony-date">${formatDate(testimony.timestamp)}</div>
             </div>
@@ -45,14 +45,14 @@ function createTestimonyCard(testimony) {
         </div>
         
         <div class="testimony-body">
-            <h3 style="margin-bottom: 0.5rem; color: var(--color-text-primary);">${testimony.title}</h3>
-            <p class="testimony-content">${testimony.description}</p>
+            <h3 style="margin-bottom: 0.5rem; color: var(--color-text-primary);">${sanitizeHTML(testimony.title)}</h3>
+            <p class="testimony-content">${sanitizeHTML(testimony.description)}</p>
             
             <div class="testimony-location">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M8 0C5.2 0 3 2.2 3 5c0 3.5 5 11 5 11s5-7.5 5-11c0-2.8-2.2-5-5-5zm0 7c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                 </svg>
-                ${testimony.location}
+                ${sanitizeHTML(testimony.location)}
             </div>
             
             <div class="testimony-tags">
@@ -135,9 +135,9 @@ function createMapPopup(testimony) {
 
     return `
         <div style="min-width: 250px;">
-            <h4 style="margin: 0 0 0.5rem 0; color: var(--color-text-primary);">${testimony.title}</h4>
+            <h4 style="margin: 0 0 0.5rem 0; color: var(--color-text-primary);">${sanitizeHTML(testimony.title)}</h4>
             <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: var(--color-text-secondary);">
-                ${testimony.description.substring(0, 100)}${testimony.description.length > 100 ? '...' : ''}
+                ${sanitizeHTML(testimony.description.substring(0, 100))}${testimony.description.length > 100 ? '...' : ''}
             </p>
             <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
                 <span class="tag tag-${testimony.category}">${getCategoryLabel(testimony.category)}</span>
@@ -166,7 +166,7 @@ function showTestimonyDetails(testimonyId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <h3 class="modal-title">${testimony.title}</h3>
+                <h3 class="modal-title">${sanitizeHTML(testimony.title)}</h3>
                 <button class="btn btn-icon btn-secondary" onclick="this.closest('.modal').remove()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -177,18 +177,18 @@ function showTestimonyDetails(testimonyId) {
             <div class="modal-body">
                 <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                     <div class="testimony-avatar" style="width: 64px; height: 64px; font-size: 2rem;">
-                        ${testimony.witnessName.charAt(0).toUpperCase()}
+                        ${sanitizeHTML(testimony.witnessName.charAt(0).toUpperCase())}
                     </div>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; font-size: 1.125rem; margin-bottom: 0.25rem;">
-                            ${testimony.witnessName}
+                            ${sanitizeHTML(testimony.witnessName)}
                         </div>
                         <div style="color: var(--color-text-tertiary); font-size: 0.875rem; margin-bottom: 0.5rem;">
                             ${formatDateTime(testimony.timestamp)}
                         </div>
                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                             ${testimony.witness ? verificationSystem.getWitnessBadges(testimony.witnessId)
-            .map(b => `<span class="badge badge-${b.type}">${b.icon} ${b.label}</span>`).join('') : ''}
+            .map(b => `<span class="badge badge-${b.type}">${b.icon} ${sanitizeHTML(b.label)}</span>`).join('') : ''}
                         </div>
                     </div>
                     <div style="text-align: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-md);">
@@ -208,7 +208,7 @@ function showTestimonyDetails(testimonyId) {
                 
                 <div style="margin-bottom: 1rem;">
                     <h4 style="margin-bottom: 0.5rem;">Descripción</h4>
-                    <p style="line-height: 1.6;">${testimony.description}</p>
+                    <p style="line-height: 1.6;">${sanitizeHTML(testimony.description)}</p>
                 </div>
                 
                 <div style="margin-bottom: 1rem;">
@@ -217,7 +217,7 @@ function showTestimonyDetails(testimonyId) {
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M8 0C5.2 0 3 2.2 3 5c0 3.5 5 11 5 11s5-7.5 5-11c0-2.8-2.2-5-5-5zm0 7c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                         </svg>
-                        ${testimony.location}
+                        ${sanitizeHTML(testimony.location)}
                     </div>
                 </div>
                 

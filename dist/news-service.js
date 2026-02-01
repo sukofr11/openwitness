@@ -139,4 +139,5 @@ class NewsService {
 
 // Global instance
 window.newsService = new NewsService();
-window.newsService.startAutoUpdate();
+// startAutoUpdate moved to app.js for better sync
+
