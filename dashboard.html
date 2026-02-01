@@ -167,24 +167,26 @@
                         <button class="btn btn-secondary">
                             <span style="margin-right: 8px;">📥</span> <span data-i18n="dash-export">Exportar CSV</span>
                         </button>
-                        <div class="flex" style="align-items: center; gap: 8px;">
-                            <div style="text-align: right; margin-right: 8px;">
+                        <div class="flex" style="align-items: center; gap: 12px; margin-left: auto;">
+                            <div style="text-align: right;">
                                 <div style="font-size: 0.85rem; font-weight: 600;">Felix Delgado (Suko)</div>
                                 <div style="font-size: 0.7rem; color: var(--color-success);">Suscripción Agency</div>
                             </div>
-                            <div
-                                style="width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.1);">
-                                FD
+                            <div class="flex" style="align-items: center; gap: 8px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.1);">
+                                    FD
+                                </div>
+                                <button id="logoutBtn" class="btn btn-icon btn-secondary" title="Cerrar Sesión"
+                                    style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                                    </svg>
+                                </button>
                             </div>
-                            <button id="logoutBtn" class="btn btn-icon btn-secondary" title="Cerrar Sesión"
-                                style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                            </button>
                         </div>
                     </div>
                 </header>
@@ -400,10 +402,10 @@
         // Populate Table (Simulated Logic)
         function updateTable() {
             const tbody = document.getElementById('feedTableBody');
-            const testimonies = dataStore.getTestimonies().slice(0, 5);
+            const testimonies = dataStore.getTestimonies().slice(0, 10); // Increased to 10
 
             tbody.innerHTML = testimonies.map(t => `
-                <tr>
+                <tr class="${t.isNews ? 'news-row' : ''}">
                     <td style="font-family: monospace; color: var(--color-text-tertiary);">#${t.id.substr(-6)}</td>
                     <td><span class="tag tag-${t.category}">${getCategoryLabel(t.category)}</span></td>
                     <td>${t.location}</td>
@@ -411,6 +413,7 @@
                         <span class="badge badge-${t.verificationStatus}">
                             ${t.verificationStatus === 'verified' ? '✓ Validado' : '⏳ Pendiente'}
                         </span>
+                        ${t.isNews ? '<span class="status-dot" style="background: var(--color-accent-primary); margin-left: 8px;" title="Real-time News"></span>' : ''}
                     </td>
                     <td>
                         <div style="width: 100px; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">

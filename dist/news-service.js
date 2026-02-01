@@ -27,14 +27,15 @@ class NewsService {
             if (data && data.data) {
                 for (const item of data.data) {
                     await this.processNewsItem(item);
-                    // Add a small delay between geocoding requests to respect Nominatim usage policy
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Minimal delay
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
         } catch (error) {
             console.error("❌ [NewsService] Error fetching news list:", error);
         } finally {
-            console.log("🏁 [NewsService] Intelligence fetch cycle completed.");
+            const currentCount = window.dataStore ? window.dataStore.getTestimonies().length : 0;
+            console.log(`🏁 [NewsService] Intelligence fetch cycle completed. Total testimonies now: ${currentCount}`);
             this.isRunning = false;
         }
     }
@@ -52,29 +53,33 @@ class NewsService {
             const title = report.title;
             const primaryCountry = report.primary_country ? report.primary_country.name : 'Unknown';
 
-            // Geocode location
-            console.log(`🌍 [NewsService] Geocoding: ${primaryCountry}`);
-            let coords = await this.geocodeLocation(primaryCountry);
+            // 1. Try Fallbacks FIRST for speed and to respect Nominatim limits
+            const fallbacks = {
+                'Ukraine': { lat: 48.3794, lng: 31.1656 },
+                'Gaza Strip': { lat: 31.3547, lng: 34.3088 },
+                'Sudan': { lat: 12.8628, lng: 30.2176 },
+                'Yemen': { lat: 15.5527, lng: 48.5164 },
+                'Palestine': { lat: 31.9522, lng: 35.2332 },
+                'Syria': { lat: 34.8021, lng: 38.9968 },
+                'Ethiopia': { lat: 9.145, lng: 40.4897 },
+                'Myanmar': { lat: 21.9162, lng: 95.9560 },
+                'Democratic Republic of the Congo': { lat: -4.0383, lng: 21.7587 },
+                'Afghanistan': { lat: 33.9391, lng: 67.7100 },
+                'Somalia': { lat: 5.1521, lng: 46.1996 },
+                'Russia': { lat: 61.5240, lng: 105.3188 },
+                'Israel': { lat: 31.0461, lng: 34.8516 },
+                'Lebanon': { lat: 33.8547, lng: 35.8623 },
+                'Haiti': { lat: 18.9712, lng: -72.2852 }
+            };
 
-            // Fallback for common countries if geocoding fails
+            let coords = fallbacks[primaryCountry];
+
+            // 2. Only geocode if no fallback exists
             if (!coords) {
-                console.log(`⚠️ [NewsService] Geocoding failed for ${primaryCountry}, checking fallbacks...`);
-                const fallbacks = {
-                    'Ukraine': { lat: 48.3794, lng: 31.1656 },
-                    'Gaza Strip': { lat: 31.3547, lng: 34.3088 },
-                    'Sudan': { lat: 12.8628, lng: 30.2176 },
-                    'Yemen': { lat: 15.5527, lng: 48.5164 },
-                    'Palestine': { lat: 31.9522, lng: 35.2332 },
-                    'Syria': { lat: 34.8021, lng: 38.9968 },
-                    'Ethiopia': { lat: 9.145, lng: 40.4897 },
-                    'Myanmar': { lat: 21.9162, lng: 95.9560 },
-                    'Democratic Republic of the Congo': { lat: -4.0383, lng: 21.7587 },
-                    'Afghanistan': { lat: 33.9391, lng: 67.7100 },
-                    'Somalia': { lat: 5.1521, lng: 46.1996 },
-                    'Russia': { lat: 61.5240, lng: 105.3188 },
-                    'Israel': { lat: 31.0461, lng: 34.8516 }
-                };
-                coords = fallbacks[primaryCountry];
+                console.log(`🌍 [NewsService] Geocoding required for: ${primaryCountry}`);
+                coords = await this.geocodeLocation(primaryCountry);
+            } else {
+                console.log(`⚡ [NewsService] Using fallback coordinates for: ${primaryCountry}`);
             }
 
             if (coords) {
@@ -135,7 +140,9 @@ class NewsService {
             window.dataStore.saveTestimony(testimony);
             // Force immediate UI hydration
             window.dispatchEvent(new Event('data-updated'));
-            console.log(`📡 [NewsService] Data-updated dispatched for ${testimony.id}`);
+            console.log(`📡 [NewsService] Ingested "${testimony.title}" [${testimony.id}]`);
+        } else {
+            console.error("❌ [NewsService] DataStore not available for ingestion!");
         }
     }
 

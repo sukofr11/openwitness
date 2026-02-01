@@ -651,7 +651,7 @@ function initCookieConsent() {
 
     banner.innerHTML = `
         <p>Utilizamos cookies para mejorar tu experiencia en nuestra red de inteligencia. Al continuar, aceptas nuestra <a href="#" style="color: var(--color-accent-secondary);">Política de Privacidad</a>.</p>
-        <button class="btn btn-primary btn-sm" id="accept-cookies">Aceptar tutto</button>
+        <button class="btn btn-primary btn-sm" id="accept-cookies">Aceptar todo</button>
     `;
 
     document.body.appendChild(banner);

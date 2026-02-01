@@ -238,7 +238,7 @@ class AuthService {
             // User is logged in
             if (loginBtn) loginBtn.style.display = 'none';
             if (userMenu) {
-                userMenu.style.display = 'block';
+                userMenu.style.display = 'flex';
                 userMenu.querySelector('.username').textContent = this.currentUser.name;
             }
             if (profileBtn) profileBtn.style.display = 'flex'; // Show profile button
